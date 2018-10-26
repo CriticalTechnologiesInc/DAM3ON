@@ -1,0 +1,11 @@
+TahoeWebPDP - Deployment Assembly
+activation.jar
+commons-lang-2.6.jar
+httpclient-4.5.2.jar
+httpcore-4.4.4.jar
+nagasena.jar
+nagasena-rta.jar
+opensaml-2.6.5.jar
+servlet-api.jar
+xmltooling-1.4.5.jar
+PROJECT --> CleaningUpTheCode

@@ -1,0 +1,102 @@
+<html>
+	<head>
+		<title>Critical Technologies</title>
+		<style>
+      body {
+	    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+		font-size:14px;
+		line-height:1.42857;
+		margin:0;
+		color:#333;
+      }
+      #resources {
+        /* avoid an excessively wide status text */
+        text-overflow: ellipsis;
+        overflow: hidden;
+		min-width: 250px;
+        max-width: 400px;
+      }
+	  #spec {
+        /* avoid an excessively wide status text */
+        text-overflow: ellipsis;
+        overflow: hidden;
+		min-width: 250px;
+        max-width: 400px;
+      }
+
+	  i{
+		  transition:opacity .2s;
+		  cursor: pointer;
+		  color:#c00;
+		  font-style:normal;
+		  float:right;
+		  margin-right:10px;
+		  margin-top:5px;
+	  }
+
+	  h1, h2, h3, h4, h5, h6{
+		  margin-top:10px;
+		  margin-bottom:10px;
+		  font-size:18px;
+		  text-align:center;
+		  font-family:inherit;
+		  font-weight:500;
+		  line-height:1.1;
+		  color:inherit;
+	  }
+
+	  button{
+		font-family:inherit;
+		font-size:inherit;
+		line-height:inherit;
+		font:inherit;
+		color:inherit;
+		margin:0;
+		overflow:visible;
+		text-transform:none;
+		cursor:pointer;
+		-webkit-appearance:button;
+	  }
+
+	  .drag-handle {
+		margin-right:10px;
+		font:bold 20px Sans-Serif;
+		color:#5f9edf;
+		display:inline-block;
+		cursor:move;
+		cursor:-webkit-grabbing;
+	  }
+
+	  li{list-style-type: none;}
+
+		</style>
+		<script src="Sortable.js"></script>
+	</head>
+
+	<body>
+		<div id="spec" style="display:block;">
+			<h4 style="text-align:center;">TPM Spec</h4>
+			<form id="spec">
+				<input id="spec12" type="radio" name="spec" value="12" checked>v1.2<br>
+				<input id="spec20" type="radio" name="spec" value="20">v2.0<br>
+			</form>
+		</div>
+
+
+		<div id="resources" style="display:block;">
+			<h4 style="text-align:center;">Resources</h4>
+
+			<ul id="items" style="padding:0;padding-left:10px;">
+			</ul>
+
+			<input style="margin:0 auto;width:100%;" placeholder="Input a resource..." type="text" name="resource" id="resource"/>
+			<br/>
+			<br/>
+			<div style="text-align:center;">
+				<button type="button" id="addresource">Add Resource</button>
+			</div>
+			<span id="warn" style="color:red;"/>
+		</div>
+		<script src="resources.js"></script>
+	</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "com.critical.nh2",
+  "description": "CTI PCR Native Host",
+  "path": "nh2",
+  "type": "stdio",
+  "allowed_origins": [
+	"chrome-extension://hmbmimahikfnkjjgopopfngigflklbij/"
+  ]
+}

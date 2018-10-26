@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/CTIUtils"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/HashCheck"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/XacmlCoreCTI"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/balana"/>
+	<classpathentry kind="lib" path="C:/jars3/slf4j-api-1.7.24.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/slf4j-jdk14-1.7.12.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/openws-1.5.5.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/esapi-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/not-yet-commons-ssl-0.3.9.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/xmlsec-1.5.7.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/xmltooling-1.4.5.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/opensaml-2.6.5.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/mysql-connector-java-5.1.38-bin.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/commons-configuration2-2.1.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/jcommander-1.48.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/commons-beanutils-1.9.3.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/commons-lang3-3.5.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/httpclient-4.5.2.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/httpcore-4.4.4.jar"/>
+	<classpathentry kind="lib" path="C:/jars3/gson.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

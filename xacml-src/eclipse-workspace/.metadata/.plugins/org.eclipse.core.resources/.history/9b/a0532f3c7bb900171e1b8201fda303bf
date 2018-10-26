@@ -1,0 +1,248 @@
+package sandbox;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opensaml.DefaultBootstrap;
+import org.opensaml.saml2.core.Assertion;
+import org.opensaml.saml2.core.Issuer;
+import org.opensaml.saml2.core.Response;
+import org.opensaml.saml2.core.Statement;
+import org.opensaml.saml2.core.impl.IssuerBuilder;
+import org.opensaml.xacml.ctx.RequestType;
+import org.opensaml.xacml.ctx.ResponseType;
+import org.opensaml.xacml.profile.saml.XACMLAuthzDecisionStatementType;
+import org.opensaml.xacml.profile.saml.impl.XACMLAuthzDecisionStatementTypeImplBuilder;
+import org.opensaml.xml.Configuration;
+import org.opensaml.xml.ConfigurationException;
+import org.opensaml.xml.XMLObjectBuilderFactory;
+import org.opensaml.xml.io.Marshaller;
+import org.opensaml.xml.io.MarshallerFactory;
+import org.opensaml.xml.io.Unmarshaller;
+import org.opensaml.xml.io.UnmarshallerFactory;
+import org.opensaml.xml.io.UnmarshallingException;
+import org.opensaml.xml.parse.BasicParserPool;
+import org.opensaml.xml.parse.XMLParserException;
+import org.opensaml.xml.signature.Signature;
+import org.opensaml.xml.signature.SignatureConstants;
+import org.opensaml.xml.signature.Signer;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.wso2.balana.ctx.ResponseCtx;
+
+import core.CTIConstants;
+import core.Config;
+import helpers.AssertionGenerator;
+import helpers.ResponseGenerator;
+import pdp.CTI_PDP;
+import pdp.PolicyDecisionPoint3;
+import xacml.SignatureHelper;
+
+public class tmp {
+
+	public static void main(String[] args) {
+		core.TinyLogConfig.config();
+		
+		String request = createXACMLRequest("john", "access", "pap");
+		
+//		CTI_PDP pdp = getPDPConfigWithFileBasedPolicyFinder("c:\\users\\jeremy\\desktop\\test\\");
+		CTI_PDP pdp = new CTI_PDP(PolicyDecisionPoint3.getPDPConfigWithDBBasedPolicyFinder()); 
+		
+		ResponseCtx rtx = pdp.evaluate(request);
+		String samlResponse = wrapAndSignRawResponse(rtx, request);
+		
+		System.out.println(samlResponse);
+		System.out.println(decisionToString(rtx));
+		
+		core.TinyLogConfig.killTinyLog();
+	}
+
+	public static XACMLAuthzDecisionStatementType getAuthzDecisionStatement() throws ConfigurationException{
+		
+		XMLObjectBuilderFactory builderFactory = Configuration.getBuilderFactory();
+		XACMLAuthzDecisionStatementTypeImplBuilder xacmlAuthz = (XACMLAuthzDecisionStatementTypeImplBuilder) builderFactory.getBuilder(XACMLAuthzDecisionStatementType.TYPE_NAME_XACML30);
+		XACMLAuthzDecisionStatementType objectXACMLAuthz = xacmlAuthz.buildObject(Statement.DEFAULT_ELEMENT_NAME,XACMLAuthzDecisionStatementType.TYPE_NAME_XACML30);
+
+		return objectXACMLAuthz;
+	}
+	
+	public static RequestType makeRequestFromString(String requestString) {
+		// TODO replace XMLNS
+		requestString = requestString.substring(requestString.indexOf("<Request"), requestString.indexOf("/Request>") + 9);
+		requestString = requestString.replace(CTIConstants.XACML2_XMLNS, CTIConstants.XACML3_XMLNS);
+
+		// Create input stream from modifiedResponseString
+		InputStream inStr = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
+
+		// Create BasicParserPool(Sun code)
+		BasicParserPool pool = new BasicParserPool();
+		pool.setNamespaceAware(true);
+
+		// Create Document object by parsing the request file
+		// This Document class is from org.w3c.dom.Document which represents an
+		// HTML or XML document and represents the root of the document tree
+		Document doc = null;
+		try {
+			doc = pool.parse(inStr);
+		} catch (XMLParserException e) {
+			e.printStackTrace();
+		}
+
+		// Get the root of the Document object
+		Element requestRoot = doc.getDocumentElement();
+
+		// Get unmarshaller factory from which the unmarshaller for a
+		// RequestType is retrieved (openSAML)
+		UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
+		Unmarshaller requestUnmarshaller = unmarshallerFactory.getUnmarshaller(requestRoot);
+
+		// Create ResponseType object by unmarshalling the file
+		RequestType request = null;
+		try {
+			request = (RequestType) requestUnmarshaller.unmarshall(requestRoot);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return request;
+	}
+	
+	public static ResponseType makeResponseFromString(String unmod_request) {
+		String requestString = unmod_request.replaceAll("\n", "").replaceAll("\r", "").replaceFirst("<Response>",
+				"<Response xmlns=\"" + CTIConstants.XACML2_XMLNS + "\">");
+		
+		// Create input stream from modifiedResponseString
+		InputStream inStr = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
+
+		// Create BasicParserPool(Sun code)
+		BasicParserPool pool = new BasicParserPool();
+		pool.setNamespaceAware(true);
+
+		// Create Document object by parsing the request file
+		// This Document class is from org.w3c.dom.Document which represents an
+		// HTML or XML document and represents the root of the document tree
+		Document doc = null;
+		try {
+			doc = pool.parse(inStr);
+		} catch (XMLParserException e) {
+			e.printStackTrace();
+		}
+
+		// Get the root of the Document object
+		Element resRoot = doc.getDocumentElement();
+
+		// Get unmarshaller factory from which the unmarshaller for a
+		// RequestType is retrieved (openSAML)
+		UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
+		Unmarshaller requestUnmarshaller = unmarshallerFactory.getUnmarshaller(resRoot);
+
+		// Create ResponseType object by unmarshalling the file
+		ResponseType response = null;
+		try {
+			response = (ResponseType) requestUnmarshaller.unmarshall(resRoot);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
+		
+	
+	public static String wrapAndSignRawResponse(ResponseCtx rtx, String request) {
+		try {
+			DefaultBootstrap.bootstrap();
+			XACMLAuthzDecisionStatementType ads = getAuthzDecisionStatement();
+			
+			ResponseType rest = makeResponseFromString(rtx.encode());
+			RequestType reqt = makeRequestFromString(request);
+			
+			ads.setRequest(reqt);
+			ads.setResponse(rest);
+			
+			String signedResponse = samlSign(ads);
+			return signedResponse;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static String samlSign(XACMLAuthzDecisionStatementType objectXACMLAuthz) {
+		XMLObjectBuilderFactory builderFactory = Configuration.getBuilderFactory();
+		AssertionGenerator assertionGenerator = new AssertionGenerator();
+		Assertion assertion = assertionGenerator.makeAssertion(Config.Saml.Assertion.issuer, Config.Saml.Assertion.subject_name_id,
+				Config.Saml.Assertion.subject_schema_location);
+		
+		
+		assertion.getStatements().add(objectXACMLAuthz);
+		ResponseGenerator responseGenerator = new ResponseGenerator();
+		Response response = responseGenerator.makeResponse(assertion);
+
+		SignatureHelper helper = new SignatureHelper();
+
+		Signature sig = helper.makeSignature(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1, helper.createCredential());
+		response.setSignature(sig);
+
+		IssuerBuilder issuerBuilder = (IssuerBuilder) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME);
+		Issuer issuer = issuerBuilder.buildObject();
+		issuer.setValue(Config.Saml.response_issuers.get(0));
+		
+		response.setIssuer(issuer);
+
+		List<Signature> signatureList = new ArrayList<Signature>();
+		signatureList.add(sig);
+
+		MarshallerFactory marshallerFactory = org.opensaml.xml.Configuration.getMarshallerFactory();
+		Marshaller marshaller = marshallerFactory.getMarshaller(Response.DEFAULT_ELEMENT_NAME);
+
+		String wrappedResponse = null;
+		try {
+			marshaller.marshall(response);
+			org.apache.xml.security.Init.init();
+			Signer.signObjects(signatureList);
+			wrappedResponse = responseGenerator.marshallToString(response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return wrappedResponse;
+	}
+	
+	public static String createXACMLRequest(String subject, String action, String resource) {
+		return "<Request xmlns=\"urn:oasis:names:tc:xacml:3.0:core:schema:wd-17\" CombinedDecision=\"false\" ReturnPolicyIdList=\"true\">\n"
+//		return "<Request xmlns=\"urn:oasis:names:tc:xacml:2.0:context:schema:os\" CombinedDecision=\"false\" ReturnPolicyIdList=\"true\">\n"
+				+
+
+				"<Attributes Category=\"urn:oasis:names:tc:xacml:1.0:subject-category:access-subject\">\n"
+				+ "<Attribute AttributeId=\"urn:oasis:names:tc:xacml:1.0:subject:subject-id\" IncludeInResult=\"true\">\n"
+				+ "<AttributeValue DataType=\"http://www.w3.org/2001/XMLSchema#string\">" + subject
+				+ "</AttributeValue>\n" + "</Attribute>\n" + "</Attributes>\n" +
+
+				"<Attributes Category=\"urn:oasis:names:tc:xacml:3.0:attribute-category:action\">\n"
+				+ "<Attribute AttributeId=\"urn:oasis:names:tc:xacml:1.0:action:action-id\" IncludeInResult=\"true\">\n"
+				+ "<AttributeValue DataType=\"http://www.w3.org/2001/XMLSchema#string\">" + action
+				+ "</AttributeValue>\n" + "</Attribute>\n" + "</Attributes>\n" +
+
+				"<Attributes Category=\"urn:oasis:names:tc:xacml:3.0:attribute-category:resource\">\n"
+				+ "<Attribute AttributeId=\"urn:oasis:names:tc:xacml:1.0:resource:resource-id\" IncludeInResult=\"true\">\n"
+				+ "<AttributeValue DataType=\"http://www.w3.org/2001/XMLSchema#string\">" + resource
+				+ "</AttributeValue>\n" + "</Attribute>\n" + "</Attributes>\n" +
+
+				"</Request>";
+
+	}
+
+	public static String decisionToString(ResponseCtx rc) {
+		int res = rc.getResults().iterator().next().getDecision();
+
+		if (res == 0)
+			return "DECISION: PERMIT";
+		else if (res == 1)
+			return "DECISION: DENY";
+		else
+			return "DECISION: " + res;
+		
+	}
+	
+}

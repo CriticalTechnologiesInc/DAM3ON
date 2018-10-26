@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+# A simple native messaging host. Shows a Tkinter dialog with incoming messages
+# that also allows to send message back to the webapp.
+import struct
+import sys
+import json
+import parse_40_custom
+import sign_data_gui
+import subprocess
+
+TPM_AUTH = "1234"
+
+# On Windows, the default I/O mode is O_TEXT. Set this to O_BINARY
+# to avoid unwanted modifications of the input/output streams.
+if sys.platform == "win32":
+    import os, msvcrt
+
+    msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
+    msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
+
+
+def get_scard():
+    outmsg = sign_data_gui.getSignature()
+
+    # Send to stdout
+    sys.stdout.write(struct.pack('I', len(outmsg)))
+    sys.stdout.write(outmsg)
+    sys.stdout.flush()
+
+
+# DO MAGIC HERE
+def get_tpm(text):
+    jtext = json.loads(text)  # Convert to a JSON object
+    outmsg_d = {}
+
+    outmsg_d['type'] = "attest"
+
+    cmnd = "java -jar nativehost2.jar -a " + TPM_AUTH + " -n " + jtext['nonce'] + " -q "
+
+    for reg in jtext["pcr_indices"]:
+        cmnd += str(reg) + " "
+
+    try:
+        output = subprocess.check_output(
+            cmnd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
+    except subprocess.CalledProcessError as exc:
+        outmsg_d['status'] = "fail"
+    else:
+        outmsg_d['tpm_quote'] = output
+        outmsg_d['status'] = "success"
+        outmsg_d['files'] = json.loads(parse_40_custom.file_details())
+        outmsg_d['spec'] = "2.0"
+
+    ###################
+    outmsg = json.dumps(outmsg_d)
+
+    # Send to stdout
+    sys.stdout.write(struct.pack('I', len(outmsg)))  # I'm not sure len() is correct here
+    sys.stdout.write(outmsg)
+    sys.stdout.flush()
+
+
+# Thread that reads messages from the webapp.
+def read_thread_func(queue):
+    while 1:
+        # Read the message length (first 4 bytes).
+        text_length_bytes = sys.stdin.read(4)
+        if len(text_length_bytes) == 0:
+            if queue:
+                queue.put(None)
+            sys.exit(0)
+        # Unpack message length as 4 byte integer.
+        text_length = struct.unpack('i', text_length_bytes)[0]
+        # Read the text (JSON object) of the message.
+        text = sys.stdin.read(text_length).decode('utf-8')
+        jtext = json.loads(text)
+        if jtext["type"] == "attest":
+            get_tpm(text)
+        elif jtext["type"] == "scard":
+            get_scard()
+
+if __name__ == '__main__':
+    read_thread_func(None)
+    sys.exit(0)
+
+    ### For testing ...
+    # jt = '{"nonce":"12345678901234567890","pcr_indices":[17,19]}'
+    # get_tpm(jt)

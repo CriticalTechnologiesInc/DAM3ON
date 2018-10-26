@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="HashCheck">
+        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module archiveName="CTIUtils.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/CTIUtils/CTIUtils">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="gson.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/gson.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="opensaml-2.6.5.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/opensaml-2.6.5.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-logging-1.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/commons-logging-1.2.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="servlet-api.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/servlet-api.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="mysql-connector-java-5.1.38-bin.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/mysql-connector-java-5.1.38-bin.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="joda-time-2.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/joda-time-2.2.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="tinylog.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/tinylog.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-beanutils-1.9.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/commons-beanutils-1.9.3.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-lang3-3.5.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/commons-lang3-3.5.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="not-yet-commons-ssl-0.3.9.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/not-yet-commons-ssl-0.3.9.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="esapi-2.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/esapi-2.0.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="xmltooling-1.4.5.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/xmltooling-1.4.5.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="openws-1.5.5.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/openws-1.5.5.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="slf4j-api-1.7.24.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/slf4j-api-1.7.24.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-configuration2-2.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/commons-configuration2-2.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="xmlsec-1.5.7.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/xmlsec-1.5.7.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="slf4j-jdk14-1.7.12.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/slf4j-jdk14-1.7.12.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-httpclient-3.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/commons-httpclient-3.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="HashCheck"/>
+        <property name="java-output-path" value="/HashCheck/build/classes"/>
+    </wb-module>
+</project-modules>

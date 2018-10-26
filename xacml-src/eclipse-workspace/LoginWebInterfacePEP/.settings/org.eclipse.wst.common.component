@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="LoginWebInterfacePEP">
+        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module archiveName="jersey-container-servlet-core.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/login-pep/jersey-container-servlet-core.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jersey-container-servlet.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/login-pep/jersey-container-servlet.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jersey-common.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/login-pep/jersey-common.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jersey-guava-2.17.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/login-pep/jersey-guava-2.17.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jersey-server.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/login-pep/jersey-server.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="hk2-api-2.4.0-b10.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/login-pep/hk2-api-2.4.0-b10.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="javax.inject-2.4.0-b10.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/login-pep/javax.inject-2.4.0-b10.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="hk2-utils-2.4.0-b10.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/login-pep/hk2-utils-2.4.0-b10.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="hk2-locator-2.4.0-b10.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/login-pep/hk2-locator-2.4.0-b10.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="validation-api-1.1.0.Final.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/login-pep/validation-api-1.1.0.Final.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="CTIUtils.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/CTIUtils/CTIUtils">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jersey-client.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/login-pep/jersey-client.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-configuration2-2.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/commons-configuration2-2.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-logging-1.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/commons-logging-1.2.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-beanutils-1.9.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/commons-beanutils-1.9.3.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-lang3-3.5.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/commons-lang3-3.5.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="XacmlCoreCTI.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/XacmlCoreCTI/XacmlCoreCTI">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-httpclient-3.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/commons-httpclient-3.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="slf4j-jdk14-1.7.12.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/slf4j-jdk14-1.7.12.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="slf4j-api-1.7.24.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/slf4j-api-1.7.24.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="mysql-connector-java-5.1.38-bin.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/mysql-connector-java-5.1.38-bin.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="xmlsec-1.5.7.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/xmlsec-1.5.7.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="joda-time-2.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/joda-time-2.2.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="openws-1.5.5.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/openws-1.5.5.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="esapi-2.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/esapi-2.0.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="not-yet-commons-ssl-0.3.9.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/jars3/not-yet-commons-ssl-0.3.9.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="java-output-path" value="/LoginWebInterfacePEP/build/classes"/>
+        <property name="context-root" value="LoginWebInterfacePEP"/>
+    </wb-module>
+</project-modules>

@@ -1,0 +1,25 @@
+1507231218001	Move folder
+1507231220667	Move folder
+1507231256129	Rename package 'java.org.wso2.balana'
+1507231321215	Rename package 'java.org.wso2.balana.attr'
+1507231352910	Rename package 'java.org.wso2.balana.xacml3'
+1507231374248	Rename package 'java.org.wso2.balana.xacml2'
+1507231417073	Rename package 'java.org.wso2.balana.finder.impl'
+1507231436667	Rename package 'java.org.wso2.balana.ctx.xacml3'
+1507231440233	Rename package 'java.org.wso2.balana.ctx.xacml2'
+1507231457220	Rename package 'java.org.wso2.balana.cond.xacml3'
+1507231460785	Rename package 'java.org.wso2.balana.cond.cluster.xacml3'
+1507231526715	Rename package 'java.org.wso2.balana.cond'
+1507231535628	Rename package 'java.org.wso2.balana.combine.xacml3'
+1507231543793	Rename package 'java.org.wso2.balana.combine.xacml2'
+1507231551815	Rename package 'java.org.wso2.balana.attr.xacml3'
+1507231563854	Rename package 'java.org.wso2.balana.attr.proxy'
+1507231768463	Delete element
+1507231771788	Delete element
+1507231807525	Move folder
+1507231818958	Rename package 'wso2.balana.utils'
+1507231824198	Rename package 'wso2.balana.utils.Constants'
+1507231828374	Rename package 'wso2.balana.utils.exception'
+1507231832653	Rename package 'wso2.balana.utils.policy'
+1507231837134	Rename package 'wso2.balana.utils.policy.dto'
+1507232407358	Move folders

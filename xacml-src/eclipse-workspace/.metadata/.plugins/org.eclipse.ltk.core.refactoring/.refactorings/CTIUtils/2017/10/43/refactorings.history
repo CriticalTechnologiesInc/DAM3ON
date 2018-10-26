@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename method &apos;xacml.XacmlParser.getSar3(...)&apos; to &apos;getSar&apos;&#x0D;&#x0A;- Original project: &apos;CTIUtils&apos;&#x0D;&#x0A;- Original element: &apos;xacml.XacmlParser.getSar3(...)&apos;&#x0D;&#x0A;- Renamed element: &apos;xacml.XacmlParser.getSar(...)&apos;&#x0D;&#x0A;- Update references to refactored element" delegate="false" deprecate="false" description="Rename method &apos;getSar3&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.method" input="/src&lt;xacml{XacmlParser.java[XacmlParser~getSar3~QString;~QString;~QString;" name="getSar" references="true" stamp="1508953121557" version="1.0"/>
+</session>

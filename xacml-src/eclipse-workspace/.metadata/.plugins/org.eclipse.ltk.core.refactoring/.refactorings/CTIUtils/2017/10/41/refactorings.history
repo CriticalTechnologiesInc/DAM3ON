@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move 5 elements to &apos;CTIUtils/src&apos;&#x0D;&#x0A;- Original project: &apos;CTIUtils&apos;&#x0D;&#x0A;- Destination element: &apos;CTIUtils/src&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     geotools&#x0D;&#x0A;     xacml&#x0D;&#x0A;     core&#x0D;&#x0A;     httptools&#x0D;&#x0A;     iptools&#x0D;&#x0A;- Update references to refactored element" description="Move folders" destination="/src" element1="geotools" element2="xacml" element3="core" element4="httptools" element5="iptools" files="0" flags="589830" folders="5" id="org.eclipse.jdt.ui.move" policy="org.eclipse.jdt.ui.moveResources" qualified="false" references="true" stamp="1507717113138" units="0" version="1.0"/>
+</session>

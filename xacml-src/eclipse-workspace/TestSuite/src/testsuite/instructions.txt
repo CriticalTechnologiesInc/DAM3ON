@@ -1,0 +1,9 @@
+Config.java should match CleaningUpTheCode.helpers.Config
+	- then remove the default constructor that takes no arguments, and also the static block
+
+Required libs:
+	- commons config
+	- commons lang
+	- commons beanutils
+	- commons logging
+	- mysql connector

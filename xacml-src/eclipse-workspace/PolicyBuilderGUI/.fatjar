@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Thu Feb 02 10:34:27 EST 2017
+onejar.license.required=false
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=C\:\\Users\\Jeremy\\Desktop\\PolicyBuilderGUI_fat.jar
+manifest.mergeall=true
+manifest.mainclass=
+manifest.file=src\\res\\manifest.mf
+jarname.isextern=true
+onejar.expand=
+excludes=
+includes=
