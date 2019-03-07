@@ -1,7 +1,0 @@
-RewriteEngine on
-RewriteBase /omni/
-
-RewriteRule "^$" "index.php" [R]
-
-RewriteCond %{REQUEST_FILENAME} !index.php
-RewriteRule ^(.*)$ index2.php?file=$1 [L,QSA]
