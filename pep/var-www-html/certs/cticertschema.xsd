@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" targetNamespace="urn:oasis:names:tc:SAML:2.0:assertion" elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault="substitution" version="2.0">
+        <import namespace="http://www.w3.org/2000/09/xmldsig#"
+                schemaLocation="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd" />
+        <import namespace="http://www.w3.org/2001/04/xmlenc#"
+                schemaLocation="http://www.w3.org/TR/2002/REC-xmlenc-core-20021210/xenc-schema.xsd" />
+        <annotation>
+                <documentation>
+                        Document identifier: saml-schema-assertion-2.0
+                        Location:
+                        http://docs.oasis-open.org/security/saml/v2.0/ Revision
+                        history: V1.0
+                        (November, 2002): Initial Standard Schema. V1.1
+                        (September, 2003):
+                        Updates within the same V1.0 namespace. V2.0
+                        (March, 2005): New
+                        assertion schema for SAML V2.0 namespace.
+
+                        Modified
+                        by CTI: 7/3/17
+                </documentation>
+        </annotation>
+        <attributeGroup name="IDNameQualifiers">
+                <attribute name="NameQualifier" type="string" use="optional" />
+<!--            <attribute name="NameQualifier" type="string" use="required" />-->
+        </attributeGroup>
+        <element name="BaseID" type="saml:BaseIDAbstractType" />
+        <complexType name="BaseIDAbstractType" abstract="true">
+                <attributeGroup ref="saml:IDNameQualifiers" />
+        </complexType>
+        <element name="NameID" type="saml:NameIDType" />
+        <complexType name="NameIDType">
+                <simpleContent>
+                        <extension base="string">
+                                <attributeGroup ref="saml:IDNameQualifiers" />
+                                <attribute name="Format" type="anyURI" use="optional" />
+                        </extension>
+                </simpleContent>
+        </complexType>
+        <element name="Issuer" type="saml:NameIDType" />
+        <element name="AssertionIDRef" type="NCName" />
+        <element name="AssertionURIRef" type="anyURI" />
+
+        <element name="Assertion" type="saml:AssertionType" />
+        <complexType name="AssertionType">
+                <sequence>
+                        <element ref="saml:Issuer" maxOccurs="1" minOccurs="1" />
+                        <element ref="ds:Signature" minOccurs="1" maxOccurs="1" />
+                        <element ref="saml:Subject" minOccurs="1" maxOccurs="1" />
+                        <element ref="saml:Conditions" minOccurs="1" maxOccurs="1" />
+                        <element ref="saml:Advice" minOccurs="0" />
+                        <element ref="saml:AttributeStatement" maxOccurs="1"
+                                minOccurs="1"></element>
+                </sequence>
+                <attribute name="Version" type="string" use="required" />
+                <attribute name="ID" type="ID" use="optional" />
+                <attribute name="IssueInstant" type="dateTime" use="required" />
+        </complexType>
+
+        <element name="Subject" type="saml:SubjectType" />
+        <complexType name="SubjectType">
+                <sequence>
+                        <element ref="saml:NameID" maxOccurs="1" minOccurs="1" />
+                </sequence>
+                <attribute name="NameQualifier" type="string" use="optional" />
+        </complexType>
+
+        <element name="Conditions" type="saml:ConditionsType" />
+        <complexType name="ConditionsType">
+                <choice minOccurs="0" maxOccurs="unbounded">
+                        <element ref="saml:Condition" />
+                        <element ref="saml:AudienceRestriction" />
+                        <element ref="saml:OneTimeUse" />
+                        <element ref="saml:ProxyRestriction" />
+                </choice>
+                <attribute name="NotBefore" type="dateTime" use="required" />
+                <attribute name="NotOnOrAfter" type="dateTime" use="required" />
+        </complexType>
+
+        <element name="Condition" type="saml:ConditionAbstractType" />
+        <complexType name="ConditionAbstractType" abstract="true" />
+
+        <element name="AudienceRestriction" type="saml:AudienceRestrictionType" />
+        <complexType name="AudienceRestrictionType">
+                <complexContent>
+                        <extension base="saml:ConditionAbstractType">
+                                <sequence>
+                                        <element ref="saml:Audience" maxOccurs="unbounded" />
+                                </sequence>
+                        </extension>
+                </complexContent>
+        </complexType>
+
+        <element name="Audience" type="anyURI" />
+
+        <element name="OneTimeUse" type="saml:OneTimeUseType" />
+        <complexType name="OneTimeUseType">
+                <complexContent>
+                        <extension base="saml:ConditionAbstractType" />
+                </complexContent>
+        </complexType>
+
+        <element name="ProxyRestriction" type="saml:ProxyRestrictionType" />
+        <complexType name="ProxyRestrictionType">
+                <complexContent>
+                        <extension base="saml:ConditionAbstractType">
+                                <sequence>
+                                        <element ref="saml:Audience" minOccurs="0" maxOccurs="unbounded" />
+                                </sequence>
+                                <attribute name="Count" type="nonNegativeInteger" use="optional" />
+                        </extension>
+                </complexContent>
+        </complexType>
+        <element name="Advice" type="saml:AdviceType" />
+        <complexType name="AdviceType">
+                <choice minOccurs="0" maxOccurs="unbounded">
+                        <element ref="saml:AssertionIDRef" />
+                        <element ref="saml:AssertionURIRef" />
+                        <element ref="saml:Assertion" />
+                        <any namespace="##other" processContents="lax" />
+                </choice>
+        </complexType>
+        <element name="Statement" type="saml:StatementAbstractType" />
+        <complexType name="StatementAbstractType" abstract="true" />
+        <element name="SubjectLocality" type="saml:SubjectLocalityType" />
+        <complexType name="SubjectLocalityType">
+                <attribute name="Address" type="string" use="optional" />
+                <attribute name="DNSName" type="string" use="optional" />
+        </complexType>
+        <element name="AuthenticatingAuthority" type="anyURI" />
+        <simpleType name="DecisionType">
+                <restriction base="string">
+                        <enumeration value="Permit" />
+                        <enumeration value="Deny" />
+                        <enumeration value="Indeterminate" />
+                </restriction>
+        </simpleType>
+        <element name="AttributeStatement" type="saml:AttributeStatementType" />
+        <complexType name="AttributeStatementType">
+                <complexContent>
+                        <extension base="saml:StatementAbstractType">
+                                <sequence>
+                                        <element ref="saml:Attribute" />
+                                </sequence>
+                        </extension>
+                </complexContent>
+        </complexType>
+
+        <element name="Attribute" type="saml:AttributeType" />
+        <complexType name="AttributeType">
+                <sequence>
+                        <element ref="saml:AttributeValue" minOccurs="1" maxOccurs="1" />
+                </sequence>
+                <attribute name="Name" type="string" use="required"/>
+                <attribute name="NameFormat" type="anyURI" use="optional" />
+                <attribute name="FriendlyName" type="string" use="optional" />
+                <anyAttribute namespace="##other" processContents="lax" />
+        </complexType>
+
+        <element name="AttributeValue" type="saml:AttributeValueType" nillable="true" />
+
+
+        <complexType name="AttributeValueType">
+                <sequence>
+                        <element name="name" type="string" minOccurs="1" maxOccurs="1" />
+                        <element name="description" type="string" minOccurs="1" maxOccurs="1" />
+                        <element name="length" type="positiveInteger" minOccurs="1" maxOccurs="1" />
+                        <element name="version" type="string" minOccurs="1" maxOccurs="1" />
+                        <element name="property_info" type="saml:propertyInfoType" minOccurs="1" maxOccurs="1" />
+                </sequence>
+        </complexType>
+
+        <complexType name="propertyInfoType">
+                <sequence maxOccurs="unbounded" minOccurs="1">
+                        <element name="entry" type="saml:propInfoEntryType" />
+                </sequence>
+        </complexType>
+
+        <complexType name="propInfoEntryType">
+                <sequence>
+                        <element name="property" type="string" minOccurs="1" maxOccurs="1" />
+                        <choice minOccurs="0" maxOccurs="1">
+                                        <element name="proof" type="anyURI" />
+                                        <element name="reference" type="anyURI" />
+					<element name="pentested" type="anyURI" />
+					<element name="insurance" type="anyURI" />
+                        </choice>
+                </sequence>
+        </complexType>
+
+</schema>
+

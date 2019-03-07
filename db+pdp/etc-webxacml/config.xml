@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<config>
+	<pub_nonce_api>https://ctidev4.critical.com/api/nonce.php?email=</pub_nonce_api>
+
+	<assert_role_not_required>
+		<issuer>ctidev4.critical.com</issuer>
+		<issuer>capraro</issuer>
+	</assert_role_not_required>
+
+	<certs>
+<!-- config stuff for recursive certificate checking. can just leave this section alone since you probably don't need it -->
+		<depth>5</depth>
+		<max_properties>10</max_properties>
+		<required_insurance_amount>10000</required_insurance_amount>
+		<accepting_untrusted>true</accepting_untrusted>
+		<add_evidence>false</add_evidence>
+		<ca_path>/etc/webxacml/ca.crt</ca_path>
+	</certs>
+
+	<pgp>
+		<!-- this has to do with the repo stuff -->
+		<token_private_key>/etc/webxacml/Git_Annex_Radio_Repo_Key_priv.asc</token_private_key>
+		<token_private_key_pw>critical</token_private_key_pw>
+		<key_server>https://keys.mailvelope.com/api/v1/key?email=</key_server>
+		<!-- key_servers is deprecated and unused -->
+		<key_servers>
+                	<server>https://sks-keyservers.net/pks/lookup?op=get&amp;search=</server> <!-- add to TestConfig -->
+                        <server>http://pgp.mit.edu/pks/lookup?op=get&amp;search=</server> <!-- add to TestConfig -->
+                </key_servers>
+                <pgp_tmp_dir>/tmp/</pgp_tmp_dir> <!-- add to TestConfig -->
+	</pgp>
+
+	<databases>
+<!-- if you imported the users.sql on swdemo1, you should only need to change the 
+	hostname:port on each db_url-->
+		<ssl>
+			<keystore_path>/etc/webxacml/mysql_keys/keystore</keystore_path>
+			<keystore_pw>changeit</keystore_pw>
+		</ssl>
+
+		<file>
+			<user>pip_get_hashes</user>
+			<password>CriticalAardvark#25</password>
+			<jdbc_driver>com.mysql.jdbc.Driver</jdbc_driver>
+			<db_url>jdbc:mysql://ctidev2.critical.com:4655/approved_file_db</db_url>
+			<store_pass>changeit</store_pass>
+		</file>
+		<pnonce>
+                        <user>pnonce_user</user>
+                        <password>CriticalAardvark#25</password>
+                        <db_url>jdbc:mysql://ctidev2.critical.com:4655/pnonce_db</db_url>
+                        <jdbc_driver>com.mysql.jdbc.Driver</jdbc_driver>
+                </pnonce>
+                <pub_nonce>
+                        <user>nonce_user</user>
+                        <password>CriticalAardvark#25</password>
+                        <db_url>jdbc:mysql://ctidev2.critical.com:4655/nonce_db</db_url>
+                        <jdbc_driver>com.mysql.jdbc.Driver</jdbc_driver>
+                </pub_nonce>
+
+		<policy>
+			<user>critical</user>
+			<password>CriticalAardvark#25</password>
+			<jdbc_driver>com.mysql.jdbc.Driver</jdbc_driver>
+			<db_url>jdbc:mysql://ctidev2.critical.com:4655/xacml3_policy</db_url>
+			<policy_table>policies</policy_table>
+			<selected_policies_table>selected</selected_policies_table>			
+		</policy>
+
+                <role>
+                        <user>role_user</user>
+                        <password>CriticalAardvark#25</password>
+                        <jdbc_driver>com.mysql.jdbc.Driver</jdbc_driver>
+                        <db_url>jdbc:mysql://ctidev2.critical.com:4655/roles_db</db_url>
+                        <table>roles</table>
+                </role>
+
+	</databases>
+
+	<saml>
+		<response_issuers>
+			<issuer>ctidev2.critical.com</issuer>
+		</response_issuers>
+
+		<request_issuers>
+			<issuer>ctidev4.critical.com</issuer>
+			<issuer>ctidev1.critical.com</issuer>
+			<issuer>ctidev3.critical.com</issuer>
+		</request_issuers>
+
+		<request_destination>ctidev2.critical.com</request_destination>
+		<request_id>CTI</request_id>
+		<assertion>
+			<issuer>CTI</issuer>
+			<subject_name_id>CTI</subject_name_id>
+			<subject_schema_location>CTI</subject_schema_location>
+		</assertion>
+	</saml>
+
+	<keystore>
+		<store_pass>assertive</store_pass>
+		<keystore_alias>ctidev2.critical.com</keystore_alias>
+		<key_pass>assertive</key_pass>
+		<keystore_path>/etc/webxacml/pdp.jks</keystore_path>
+		<ultimate_trusted_issuers>
+                        <issuer>ultimate</issuer>
+                </ultimate_trusted_issuers>
+	</keystore>
+
+	<basic>
+		<log>/var/log/xacml3.log</log>
+		<debug>true</debug>
+		<xsd>/etc/webxacml/xacml.xsd</xsd>
+		<exig>/etc/webxacml/xacml.exig</exig>
+	</basic>
+	<tpm>
+		<tmp_dir>/etc/webxacml/tpm_tmp/</tmp_dir>
+		<hash_dir>/etc/webxacml/hash/</hash_dir>
+	</tpm>
+</config>
+

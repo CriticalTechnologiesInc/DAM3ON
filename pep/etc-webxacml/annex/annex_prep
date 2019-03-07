@@ -1,0 +1,183 @@
+#!/usr/bin/env python
+import sys
+import base64
+import os
+import subprocess
+import pwd,grp
+
+TAHOE_REPO = sys.argv[1]
+action = sys.argv[2]
+objectname = base64.b64decode(sys.argv[3])
+#objectname = sys.argv[3]
+
+##### GLOBAL CONSTANTS
+GIT_REPO = TAHOE_REPO + "_repo"
+GIT_REPO_LOCAL_PATH = "/opt/git/"+GIT_REPO
+DEBUG=False
+### END GLOBAL CONSTANTS
+
+
+
+FNULL = open(os.devnull, 'w') # suppress STD*
+os.setgid(grp.getgrnam('git').gr_gid) # change uid/gid/$HOME to user git's
+os.setuid(pwd.getpwnam('git').pw_uid) # Apache2 can't do it, so this is run as sudo so it can
+os.environ["HOME"] = "/home/git/" # otherwise, git-annex complains, ableit still works
+
+if DEBUG:
+    print "Running with EGID: " + str(os.getegid())
+    print "Running with GID: " + str(os.getgid())
+    print "Running with EUID: " + str(os.geteuid())
+    print "Running with UID: " + str(os.getuid())
+    print "$HOME: " + os.environ["HOME"]
+    print "$USER: " + os.environ["USER"]
+    print "$USERNAME: " + os.environ["USERNAME"]
+    print "$LOGNAME: " + os.environ["LOGNAME"]
+
+def getObject(objectname):
+    try:
+        if DEBUG:
+            retcode = subprocess.call(['git', 'annex', 'get', objectname])
+        else:
+            retcode = subprocess.call(['git', 'annex', 'get', objectname], stdout=FNULL, stderr=FNULL)
+        if retcode == 0:
+            return True
+        else:
+            return False
+    except:
+        return False
+
+
+def dropObject(objectname):
+    try:
+        retcode = subprocess.call(['git', 'annex', 'drop', objectname], stdout=FNULL, stderr=FNULL)
+        if retcode == 0:
+            return True
+        else:
+            return False
+    except:
+        return False
+
+
+def addObject(objectname):
+    try:
+        if DEBUG:
+            print "About to verify if object exists: " + GIT_REPO_LOCAL_PATH + "/" + objectname
+        if verifyObjectExists(GIT_REPO_LOCAL_PATH + "/" + objectname):
+            if DEBUG:
+                print "About to run: " + "git annex add " + objectname
+                retcode1 = subprocess.call(['git', 'annex', 'add', objectname])
+                print "About to run: " + 'git commit -m "automated addition of file:"' + objectname
+                retcode2 = subprocess.call(['git', 'commit', '-m', '"automated addition of file:'+objectname+'"'])
+                print "About to run: " + "git annex move " + objectname + " -t " + TAHOE_REPO
+                retcode3 = subprocess.call(['git', 'annex', 'move', objectname, '-t', TAHOE_REPO])
+            else:
+                retcode1 = subprocess.call(['git', 'annex', 'add', objectname], stdout=FNULL, stderr=FNULL)
+                retcode2 = subprocess.call(['git', 'commit', '-m', '"automated addition of file:'+objectname+'"'], stdout=FNULL, stderr=FNULL)
+                retcode3 = subprocess.call(['git', 'annex', 'move', objectname, '-t', TAHOE_REPO], stdout=FNULL, stderr=FNULL)
+            if(DEBUG):
+                print "In addObject: "
+                print "retcode1 : " + str(retcode1)
+                print "retcode2 : " + str(retcode2)
+                print "retcode3 : " + str(retcode3)
+            if (retcode1 == 0) and (retcode2 == 0) and (retcode3 == 0):
+                return True
+            else:
+                return False
+    except:
+        return False
+    return False
+
+
+# as a regular FILE, not (link or dir or orphan link)
+def verifyObjectExists(objectname):
+    if os.path.isfile(objectname):
+        return True
+    else:
+        return False
+
+
+def isFile(objectname):
+    return os.path.isfile(objectname)
+
+
+def isLink(objectname):
+    return os.path.islink(objectname)
+
+
+def isBrokenLink(objectname):
+    return not os.path.exists(os.readlink(objectname))
+
+
+def invalidRequest():
+    # this should never happen
+    print "invalid"
+
+def success():
+    print "success"
+
+def printError(code):
+    if DEBUG:
+        print "error: " + code
+    else:
+        print "error" + code
+
+if __name__ == "__main__":
+
+    os.chdir("/opt/git/" +  GIT_REPO)
+
+    # I know this looks crazy, but it follows this logic with some added checks for directories:
+    '''
+    broken link for file:           valid link for file:
+        isfile = false                  isfile = true
+        islink = true                   islink = true
+        isbrokenlink = true             isbrokenlink = false
+
+    file there:                     nothing there:
+        isfile = true                   isfile = false
+        islink = false                  islink = false
+        isbrokenlink = EXCEPTION        isbrokenlink = EXCEPTION
+    '''
+
+    if action.lower() == "get":
+        if isFile(objectname):
+            if isLink(objectname):
+                if getObject(objectname):
+                    success()
+                else:
+                    printError("1 - Failed to get object")
+            else:
+                invalidRequest()
+        else:
+            if isLink(objectname):
+                if isBrokenLink(objectname):
+                    if getObject(objectname):
+                        if os.path.isdir(objectname):
+                            success()
+                        else:
+                            success()
+                    else:
+                        printError("2 - probably permissions")
+                else:
+                    if getObject(objectname):
+                        success()
+                    else:
+                        printError("3 - failed to get object")
+            else:
+                print objectname
+                invalidRequest()
+
+    elif action.lower() == "drop":
+        if dropObject(objectname):
+            success()
+        else:
+            printError("4 - probably permissions")
+
+    elif action.lower() == "add":
+        if addObject(objectname):
+            success()
+        else:
+            printError("5 - Failed to add object")
+
+    else:
+        printError("6 - Bad action")
+

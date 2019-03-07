@@ -1,0 +1,61 @@
+###############################################################################
+LINUX BASED CLIENT GOOGLE CHROME INSTALLATION
+
+Last Updated: 03-06-2019
+
+Adam T. Wiethuechter <adam.wiethuechter@critical.com>
+Critical Technologies Inc. (CTI)
+###############################################################################
+###############################################################################
+Document Format
+===============
+Each section of this document is separated by '=' bars above and below its
+title and can be taken independently. However it is strongly recommended to do
+these sections in the order presented in this document unless otherwise noted.
+
+Subsections are denoted by '=' or '-' markings below the title. The
+use of either '=' or '-' is dependent on the author and styling of the
+section to make information be easily parsed.
+
+The above markings can span the document on full lines, however are not
+required to.
+
+Important notation information and details can be found between '#' marking
+lines that extend across the documents 80 character limit.
+###############################################################################
+
+===============================================================================
+SECTION 0: Introduction
+===============================================================================
+This document is a support document for installing the DA3MON system.
+
+Here you will be guided in installing Google Chrome onto a Linux (Ubuntu)
+based system.
+
+System is arbitrary (Windows/Linux) however the Chrome web browser is the
+expected web browser for use with DAM3ON.
+
+If Linux is used 'sudo' permissions are required for your user.
+
+===============================================================================
+SECTION 1: Installing Google Chrome on Linux
+===============================================================================
+------
+Step 1
+------
+First we will get the PPA for Google Chrome.
+
+	wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub \
+		| sudo apt-key add -
+
+	sudo sh -c 'echo "deb [arch=amd64] \
+		http://dl.google.com/linux/chrome/deb/ stable main" >> \
+		/etc/apt/sources.list.d/google-chrome.list'
+
+------
+Step 2
+------
+Next we run an update to grab the repo and install:
+
+	sudo apt-get update
+	sudo apt-get install google-chrome-stable

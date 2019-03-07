@@ -1,0 +1,17 @@
+RewriteEngine on
+RewriteBase /certs/
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php [NC,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !index.php
+RewriteCond %{REQUEST_FILENAME} !css/style.css
+RewriteCond %{REQUEST_FILENAME} !style.xsl
+RewriteCond %{REQUEST_FILENAME} !cticertschema.xsd
+RewriteCond %{REQUEST_FILENAME} !policy.pdf
+RewriteRule ^(.*)$ index.php?file=$0 [NC,QSA]
+
+
+#RewriteRule ^index.php?file=$1$ sable.xml [NC]
+#RewriteRule ^(.*)\.(xml)$ index.php?file=$0 [NC,L]
+#RewriteRule ^sable.xml?$ index.php?file=sable\.xml [NC,L]

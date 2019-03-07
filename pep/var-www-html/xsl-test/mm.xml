@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="xacml3.xsl" ?>
+<PolicySet PolicyCombiningAlgId="urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:permit-overrides" PolicySetId="medical-topic-mm" Version="1.0">
+
+	<Description>Policy for the medical MM topic</Description>
+	<Target>
+		<AnyOf>
+			<AllOf>
+				<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">smtp.medical@ctidev1.critical.com</AttributeValue>
+					<AttributeDesignator MustBePresent="false"
+                                         Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                         AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"
+                                         DataType="http://www.w3.org/2001/XMLSchema#string"/>
+				</Match>
+			</AllOf>
+			<AllOf>
+				<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">sms.medical@ctidev1.critical.com</AttributeValue>
+					<AttributeDesignator MustBePresent="false"
+                                         Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                         AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"
+                                         DataType="http://www.w3.org/2001/XMLSchema#string"/>
+				</Match>
+			</AllOf>
+			<AllOf>
+				<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">medical@ctidev3.critical.com</AttributeValue>
+					<AttributeDesignator MustBePresent="false"
+                                         Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                         AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"
+                                         DataType="http://www.w3.org/2001/XMLSchema#string"/>
+				</Match>
+			</AllOf>
+		</AnyOf>
+	</Target>
+
+	<Policy xmlns:xacml="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" PolicyId="medical-post-sub"
+        RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-overrides"
+        Version="1.0">
+		<Description>policy for some actions</Description>
+		<Target>
+			<AnyOf>
+				<AllOf>
+					<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">subscribe</AttributeValue>
+						<AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action" />
+					</Match>
+				</AllOf>
+				<AllOf>
+					<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">unsubscribe</AttributeValue>
+						<AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action" />
+					</Match>
+				</AllOf>
+				<AllOf>
+					<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">post</AttributeValue>
+						<AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action" />
+					</Match>
+				</AllOf>
+				<AllOf>
+					<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">revoke_post</AttributeValue>
+						<!-- make this ADMIN only -->
+						<AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action" />
+					</Match>
+				</AllOf>
+			</AnyOf>
+		</Target>
+
+		<Rule Effect="Permit" RuleId="sub-post-rule">
+			<Condition>
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+
+					<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-at-least-one-member-of">
+						<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag">
+							<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">admin</AttributeValue>
+							<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">user</AttributeValue>
+						</Apply>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+						AttributeId="role" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+					</Apply>
+
+					<Apply FunctionId="valid-pgp">
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                        AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                        AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                        AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment"
+						AttributeId="pgpsig"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+					</Apply>
+				</Apply>
+			</Condition>
+		</Rule>
+
+		<Rule Effect="Deny" RuleId="Deny_all_others" >
+			<Description>Deny all rule</Description>
+		</Rule>
+
+	<AdviceExpressions>
+		<AdviceExpression AdviceId="ru" AppliesTo="Permit">
+			<AttributeAssignmentExpression AttributeId="resource_url">
+				<AttributeValue AttributeId="resource_url" DataType="http://www.w3.org/2001/XMLSchema#string">https://ctidev4.critical.com/mailman/</AttributeValue>
+			</AttributeAssignmentExpression>
+		</AdviceExpression>
+
+		<AdviceExpression AdviceId="urn:oasis:names:tc:xacml:1.0:subject:subject-id" AppliesTo="Deny">
+			<AttributeAssignmentExpression AttributeId="auth">
+				<AttributeValue AttributeId="auth" DataType="http://www.w3.org/2001/XMLSchema#string">true</AttributeValue>
+			</AttributeAssignmentExpression>
+		</AdviceExpression>
+	</AdviceExpressions>
+	</Policy>
+
+	<Policy xmlns:xacml="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" PolicyId="medical-submit"
+        RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-overrides"
+        Version="1.0">
+		<Description>submitcap</Description>
+		<Target>
+			<AnyOf>
+				<AllOf>
+					<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">submit</AttributeValue>
+						<AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action" />
+					</Match>
+				</AllOf>
+			</AnyOf>
+		</Target>
+
+		<Rule Effect="Permit" RuleId="submitcap">
+			<Condition>
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+
+					<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-at-least-one-member-of">
+						<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag">
+							<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">user</AttributeValue>
+						</Apply>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+						AttributeId="role" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+					</Apply>
+
+					<Apply FunctionId="valid-pgp">
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                        AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                        AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                        AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment"
+						AttributeId="pgpsig"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+					</Apply>
+				</Apply>
+			</Condition>
+		</Rule>
+
+		<Rule Effect="Deny" RuleId="Deny_all_others" >
+			<Description>Deny all rule</Description>
+		</Rule>
+
+		<AdviceExpressions>
+			<AdviceExpression AdviceId="ru" AppliesTo="Permit">
+				<AttributeAssignmentExpression AttributeId="resource_url">
+					<AttributeValue AttributeId="resource_url" DataType="http://www.w3.org/2001/XMLSchema#string">https://ctidev4.critical.com/submitcap/</AttributeValue>
+				</AttributeAssignmentExpression>
+				<AttributeAssignmentExpression AttributeId="need-token">
+					<AttributeValue AttributeId="need-token" DataType="http://www.w3.org/2001/XMLSchema#string">yep</AttributeValue>
+				</AttributeAssignmentExpression>
+			</AdviceExpression>
+
+			<AdviceExpression AdviceId="urn:oasis:names:tc:xacml:1.0:subject:subject-id" AppliesTo="Deny">
+				<AttributeAssignmentExpression AttributeId="auth">
+					<AttributeValue AttributeId="auth" DataType="http://www.w3.org/2001/XMLSchema#string">true</AttributeValue>
+				</AttributeAssignmentExpression>
+			</AdviceExpression>
+		</AdviceExpressions>
+
+	</Policy>
+
+	<Policy xmlns:xacml="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" PolicyId="medical-view"
+        RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-overrides"
+        Version="1.0">
+		<Description>view alerts</Description>
+		<Target>
+			<AnyOf>
+				<AllOf>
+					<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">view</AttributeValue>
+						<AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action" />
+					</Match>
+				</AllOf>
+			</AnyOf>
+		</Target>
+
+		<Rule Effect="Permit" RuleId="viewalerts">
+			<Condition>
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+
+					<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-at-least-one-member-of">
+						<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag">
+							<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">user</AttributeValue>
+						</Apply>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+						AttributeId="role" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+					</Apply>
+
+					<Apply FunctionId="valid-pgp">
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                        AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                        AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                        AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment"
+						AttributeId="pgpsig"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+					</Apply>
+				</Apply>
+			</Condition>
+		</Rule>
+
+		<Rule Effect="Deny" RuleId="Deny_all_others" >
+			<Description>Deny all rule</Description>
+		</Rule>
+
+		<AdviceExpressions>
+			<AdviceExpression AdviceId="ru" AppliesTo="Permit">
+				<AttributeAssignmentExpression AttributeId="resource_url">
+					<AttributeValue AttributeId="resource_url" DataType="http://www.w3.org/2001/XMLSchema#string">https://ctidev4.critical.com/viewalerts/</AttributeValue>
+				</AttributeAssignmentExpression>
+			</AdviceExpression>
+
+			<AdviceExpression AdviceId="urn:oasis:names:tc:xacml:1.0:subject:subject-id" AppliesTo="Deny">
+				<AttributeAssignmentExpression AttributeId="auth">
+					<AttributeValue AttributeId="auth" DataType="http://www.w3.org/2001/XMLSchema#string">true</AttributeValue>
+				</AttributeAssignmentExpression>
+			</AdviceExpression>
+		</AdviceExpressions>
+	</Policy>
+
+	<Policy xmlns:xacml="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" PolicyId="medical-view"
+        RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-overrides"
+        Version="1.0">
+		<Description>view alerts</Description>
+		<Target>
+			<AnyOf>
+				<AllOf>
+					<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">access</AttributeValue>
+						<AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action" />
+					</Match>
+				</AllOf>
+			</AnyOf>
+		</Target>
+
+		<Rule Effect="Permit" RuleId="viewalert">
+			<Condition>
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+
+					<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-at-least-one-member-of">
+						<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag">
+							<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">user</AttributeValue>
+						</Apply>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+						AttributeId="role" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+					</Apply>
+
+					<Apply FunctionId="valid-pgp">
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                        AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                        AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                        AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+						<AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment"
+						AttributeId="pgpsig"
+                        DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false"/>
+					</Apply>
+				</Apply>
+			</Condition>
+		</Rule>
+
+		<Rule Effect="Deny" RuleId="Deny_all_others" >
+			<Description>Deny all rule</Description>
+		</Rule>
+
+		<AdviceExpressions>
+			<AdviceExpression AdviceId="ru" AppliesTo="Permit">
+				<AttributeAssignmentExpression AttributeId="resource_url">
+					<AttributeValue AttributeId="resource_url" DataType="http://www.w3.org/2001/XMLSchema#string">https://ctidev4.critical.com/viewalert/</AttributeValue>
+				</AttributeAssignmentExpression>
+			</AdviceExpression>
+
+			<AdviceExpression AdviceId="urn:oasis:names:tc:xacml:1.0:subject:subject-id" AppliesTo="Deny">
+				<AttributeAssignmentExpression AttributeId="auth">
+					<AttributeValue AttributeId="auth" DataType="http://www.w3.org/2001/XMLSchema#string">true</AttributeValue>
+				</AttributeAssignmentExpression>
+			</AdviceExpression>
+		</AdviceExpressions>
+	</Policy>
+
+</PolicySet>

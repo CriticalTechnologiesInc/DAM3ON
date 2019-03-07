@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+import os
+import shutil
+import pwd
+import base64
+import sys
+import grp
+
+src = base64.b64decode(sys.argv[1])
+dst = base64.b64decode(sys.argv[2])
+
+def doesFileExist(path):
+    return os.path.isfile(path)
+
+if(doesFileExist(src)):
+    shutil.move(src,dst)
+    os.chown(dst,pwd.getpwnam("git").pw_uid, grp.getgrnam("git").gr_gid)
+    os.chmod(dst,0664)
+    print "success"
+    quit()
+else:
+    print "file doesn't exist"
+    quit()

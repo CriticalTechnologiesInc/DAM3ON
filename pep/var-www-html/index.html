@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>DAM3ON</title>
+    <link rel="stylesheet" href="login/css/normalize.css">
+	<link rel="stylesheet" href="style.css">
+	<script src="login/js/jquery.min.js"></script> 
+	<script src="login/js/prefixfree.min.js"></script>
+<link rel="icon" href="icon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="icon.ico" type="image/x-icon" />
+
+<style>
+video { 
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -100;
+    transform: translateX(-50%) translateY(-50%);
+
+  background-size: cover;
+  transition: 1s opacity;
+}
+.login { 
+	width:25%;
+	background: rgba(0,0,0,0.8);
+	padding: 30px;
+	border-radius: 15px;
+	box-shadow: 0 0 50px;
+	color: white;
+	margin:0 auto;
+	margin-top:14%;
+}
+.login h1 { color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; }
+</style>
+
+  </head>
+  <body>
+ <div style="position:fixed; top:10px; left:10px; color:yellow; font-size: 16pt; opacity: 0.85;">
+    UNCLASSIFIED
+    </div>
+        <div style="position:fixed; top:10px; color:yellow;right:10px; font-size: 16pt; opacity: 0.85;">
+    UNCLASSIFIED
+    </div>
+
+<video playsinline autoplay muted loop poster="/media/tech_min.png" id="bgvid" loop>
+	<source src="/media/tech_min.mp4" type="video/mp4">
+<!--	<source src="/media/tech_min.mp4" type="video/mp4">
+	<source src="/media/world.mp4" type="video/mp4">
+	<source src="/media/network.mp4" type="video/mp4">
+	<source src="/media/globe.mp4" type="video/mp4"> -->
+	<!--<source src="/media/riot.webm" type="video/webm">-->
+</video>
+
+
+		<div id="maindiv" class="login">
+			<h1>DAM3ON</h1>
+<p style="color:white;text-align:center;">Make sure your PGP public key is uploaded to <a href="https://keys.mailvelope.com/demo.html" style="color:#b9b9b9;">keys.mailvelope.com</a></p>
+
+<a href="login/" style="text-decoration:none;"><button id="login" type="submit" class="btn btn-primary btn-block btn-large">Secure Access</button></a>
+<a href="logout.php" style="text-decoration:none;"><button id="buttonid" type="submit" class="btn btn-primary btn-block btn-large">Logout</button></a>
+	</div>
+
+<script type="text/javascript">
+window.addEventListener('keypress', function (e) {
+    if (e.keyCode == 13) {
+		document.getElementById("login").click();
+	}
+});
+</script>
+
+<div style="position:fixed; bottom:10px; left:10px; right:60%; font-size: 8pt; opacity: 0.85;color:#F7F7F7;">
+This research was developed with funding from the Defense Advanced
+Research Projects Agency (DARPA). The views, opinions and/or findings
+expressed are those of the author(s) and should not be interpreted as
+representing the official views or policies of the Department of Defense
+or the U.S. Government.
+</div>
+		
+<div style="position:fixed; bottom:0; right:0; opacity: 0.65;">
+<a href="http://www.critical.com"><img src="/media/cti-logo.png" height=63 width=275></a>
+</div>
+
+  </body> 
+</html>
+
+

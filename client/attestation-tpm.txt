@@ -1,0 +1,229 @@
+###############################################################################
+CLIENT ATTESTATION WITH CHROME PCR EXTENSION
+
+Last Updated: 03-06-2019
+
+Adam T. Wiethuechter <adam.wiethuechter@critical.com>
+Critical Technologies Inc. (CTI)
+###############################################################################
+###############################################################################
+Document Format
+===============
+Each section of this document is separated by '=' bars above and below its
+title and can be taken independently. However it is strongly recommended to do
+these sections in the order presented in this document unless otherwise noted.
+
+Subsections are denoted by '=' or '-' markings below the title. The
+use of either '=' or '-' is dependent on the author and styling of the
+section to make information be easily parsed.
+
+The above markings can span the document on full lines, however are not
+required to.
+
+Important notation information and details can be found between '#' marking
+lines that extend across the documents 80 character limit.
+###############################################################################
+
+===============================================================================
+SECTION 0: Introduction
+===============================================================================
+This document is a support document for installing the DA3MON system.
+
+Here you will be guided in creating and using the PCR extension to enable the
+DAM3ON system to perform client attestation.
+
+System is arbitrary (Windows/Linux) however the Chrome web browser is the
+expected web browser for use with DAM3ON.
+
+Please refer to 'chrome-linux.txt' on how to install Google Chrome
+on Linux.
+
+This will be using a TPM 1.2 system.
+
+If Linux is used 'sudo' permissions are required for your user.
+
+===============================================================================
+SECTION 1: PCR Extension Modification
+===============================================================================
+
+###############################################################################
+The included PCR extension source files are for CTI's PCR extension which
+can be found on the Chrome Extension Store at the following address:
+
+	https://chrome.google.com/webstore/detail/critical-pcr-extension/hmbmimahikfnkjjgopopfngigflklbij
+
+However this extension will NOT work for your specially configured system due
+to domain differences.
+###############################################################################
+
+Step 1
+------
+You will have to modify the PCR extension source to match your configuration.
+This involves changing the 'manifest.json' in 'chrome_ext_src/' to include
+the domains for the web interface.
+
+This can be found under the "content_scripts" section of the JSON file.
+
+------
+Step 2
+------
+You must now publish this modified PCR extentsion to the Chrome webstore. In
+this documentation we will not go into how to publish the extension as this
+process is controlled by Google and could change.
+
+------
+Step 3
+------
+Once you have been granted Developer rights on the Chrome Webstore and given
+a Chrome Extension ID for your uploaded extension you will have to edit
+the file 'chrome_nm/*.json' to reflect this new ID under the "allowed-origins'.
+
+===============================================================================
+SECTION 2: PCR Extension Installation
+===============================================================================
+------
+Step 1
+------
+Go to the Chrome Webstore and download your PCR Extension into Chrome.
+
+===============================================================================
+SECTION 3: PCR Client Software
+===============================================================================
+We also have to install some stuff on the client box to talk to the TPM chip
+when we require Attestation via DAM3ON.
+
+------
+Step 1
+------
+Install dependencies:
+
+	sudo apt install trousers tpm-tools dos2unix unzip \
+				build-essential python-pip swig
+	sudo pip install pykcs11 pyopenssl
+
+------
+Step 2
+------
+Install Chrome (see 'chrome-linux.txt').
+
+------
+Step 3
+------
+Install TPM Quote Tools. A special version is included in this release
+that must be installed.
+
+	tar -xf tpm-quote-tools-1.0.5.tar.gz
+	cd tpm-quote-tools-1.0.5/
+	./configure
+	make
+	sudo make install
+
+###############################################################################
+NOTE: The make output will look as if it is actually broken. It is not,
+unless you get an explicit error as long as make[1] exits cleanly the build
+and install was successful.
+###############################################################################
+
+------
+Step 4
+------
+Install the chrome_nm package.
+
+	mv /path/to/chome_nm.zip ~
+	unzip chrome_nm.zip
+	mv 12/ chrome_nm/
+	sudo chown -R <user>.<user> chrome_nm/
+	cd chrome_nm/
+	sudo chmod 777 native-messaging-example-host
+	sudo chmod +x chrome_nm_install.sh
+	sudo ./chrome_nm_install.sh
+
+###############################################################################
+NOTE: The folder 'chrome_nm' that is unzipped MUST be named "chrome_nm" and
+also MUST be located in your home folder on Ubuntu (/home/<user>). The
+build WILL fail if these conditions are NOT met.
+
+Also be sure to have the folder, and its file match the permission levels
+around it in the home folder.
+###############################################################################
+
+------
+Step 5
+------
+We now will create and load the AIK.
+
+	cd /home/<username>/chrome_nm/tpm && tpm_mkaik tpm_key.blob tpm_key.pubk
+	cp tpm_key.pubk $(sha256sum uuid.txt | cut -d" " -f 1).pubk
+	tpm_loadkey tpm_key.blob uuid.txt
+
+------
+Step 6
+------
+Set any files to be measured by SABLE to global readable.
+
+	cd /boot
+	sudo chmod +r *
+
+------
+Step 7
+------
+Move the hash file created into the PDP host. This is the file with the long
+name with an extension of '.pubk'.
+
+It should be placed into the '/etc/webxacml/tpm_tmp' folder on the PDP.
+
+------
+Step 8
+------
+During the SABLE boot, before you are asked if you wish to configure
+two hash values (labeled PCR[17] and PCR[19]) will be displayed.
+
+You will need PCR[17] and add it to the appropriate XACML policy.
+
+------
+Step 9
+------
+For testing purposes create a file in your home directory titled "guard.txt"
+and in it have the text "dog".
+
+===============================================================================
+SECTION 4: Using PCR Extension
+===============================================================================
+
+###############################################################################
+The following section has been documented using CTI's PCR Extension created
+for their development grid.
+###############################################################################
+
+------
+Step 1
+------
+In Chrome navigate to the PEP server.
+
+------
+Step 2
+------
+Use the resource "attestonly" or "pgpauthattest" and request access.
+
+------
+Step 3
+------
+Enter your email, and hit "Request Access"
+Confirm to run the attestation code, via the pop up.
+
+------
+Step 4
+------
+A pop up should appear asking for your SRK password, enter it.
+The next pop up select "Skip All"
+
+------
+Step 5
+------
+Sign the PGP with your email and password.
+
+------
+Step 6
+------
+You should be sent to a page declaring the type of resource
+you selected.

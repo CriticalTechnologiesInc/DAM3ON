@@ -1,0 +1,358 @@
+﻿###############################################################################
+GIT-ANNEX-TAHOE INSTALLATION AND CONFIGURATION
+
+Last Updated: 03-06-2019
+
+Adam T. Wiethuechter <adam.wiethuechter@critical.com>
+Critical Technologies Inc. (CTI)
+###############################################################################
+###############################################################################
+Document Format
+===============
+Each section of this document is separated by '=' bars above and below its
+title and can be taken independently. However it is strongly recommended to do
+these sections in the order presented in this document unless otherwise noted.
+
+Subsections are denoted by '=' or '-' markings below the title. The
+use of either '=' or '-' is dependent on the author and styling of the
+section to make information be easily parsed.
+
+The above markings can span the document on full lines, however are not
+required to.
+
+Important notation information and details can be found between '#' marking
+lines that extend across the documents 80 character limit.
+###############################################################################
+
+===============================================================================
+SECTION 0: Introduction
+===============================================================================
+This document is one module for installing the DAM3ON system.
+
+Here you will be guided in installing the 'git-annex-tahoe' component of the
+DA3MON Architecture.
+
+This is setup on the same host as the PEP.
+
+You will need 'sudo' permissions during this install process.
+
+###############################################################################
+It is assumed that the DA3MON base build instructions have been completed
+before this documentation.
+
+Please refer to "DMNBld.docx" for details.
+###############################################################################
+
+===============================================================================
+SECTION 1: Install Git-Annex
+===============================================================================
+------
+Step 1
+------
+Install git-annex via apt:
+
+	sudo apt install git-annex
+
+------
+Step 2
+------
+Move files to bin folder.
+
+	sudo cp usr-local-bin/* /usr/local/bin/
+
+===============================================================================
+SECTION 2: Create Git User
+===============================================================================
+------
+Step 1
+------
+Login as yourself and run the following:
+
+	sudo adduser git
+
+Step 1A
+-------
+Run the following commands:
+
+	cd /home/git
+	sudo mkdir Downloads/
+	sudo chown git.git Downloads/
+
+------
+Step 2
+------
+Login in as the new git user created and run the following commands:
+
+	su git
+	cd /home/git/
+	cat <your-key>.pub > .ssh/authorizied_keys
+
+Step 2A
+-------
+Accept the default file loctions and enter a passphrase to create an SSH key.
+
+------
+Step 3
+------
+Run the following command:
+
+	vim .profile
+
+Step 3A
+-------
+Add the following line:
+
+	export TAHOE_FURL="introducer.furl = <actual value>"
+
+###############################################################################
+NOTE: Actual value can be found in tahoe.cfg file of any node in the Tahoe
+grid or in file introducer.furl in the Tahoe introducer directory.  Refer to
+the Tahoe installation instructions for details.
+###############################################################################
+
+Step 3B
+-------
+Save and exit.
+
+------
+Step 4
+------
+Login as user git and run the following command:
+
+	echo $TAHOE_FURL
+
+Confirm that the output is correct from step 3.
+
+===============================================================================
+SECTION 3: Create Git Repo & Configure Git-Annex with TAHOE Remote
+===============================================================================
+------
+Step 1
+------
+Login in as yourself.
+
+Step 1A
+-------
+Run the following commands to setup a git repo directory:
+
+	cd /opt
+	sudo mkdir git
+	cd git/
+	sudo mkdir <topic>_repo
+	cd /opt
+	sudo chown -R git.git git
+
+###############################################################################
+<topic> is the name or nickname of the topic.
+###############################################################################
+
+Step 1B
+-------
+We must now copy and update some helpful scripts.
+
+	cd /usr/local/bin
+	sudo cp enableradio.sh enable<topic>.sh
+	sudo cp initradio.sh init<topic>.sh
+	sudo vim enable<topic>.sh
+	sudo vim init<topic>.sh
+
+Change the files to use the correct path to the repo topic created.
+Also confirm that the Nickname of the host is correct and the port numbers
+match across the files.
+
+Note that the port number must be different for each different topic!
+
+Step 1B
+-------
+Log out of the host.
+
+------
+Step 2
+------
+Login in as the git user.
+
+Step 2A
+-------
+Run the following commands to create a git repo:
+
+	cd /opt/git/<topic>_repo
+	git init
+	git config - -global user.email “<name>@<domain>”
+	git config - -global user.name “<your name”
+	git annex init
+
+###############################################################################
+where <name>@<domain> is a valid email address
+where <your name> is your name
+###############################################################################
+
+Step 2B
+-------
+Put some files into the new repo.
+
+###############################################################################
+Best to create a README.txt describing the topic.
+###############################################################################
+
+Step 2C
+-------
+Run the following commands:
+
+	git annex add <filename> or git annex add .
+	git commit -m "Message"
+	init<topic>.sh
+	uploadall.sh <topic>
+
+This will setup the repo to be connected via git-annex to TAHOE and upload
+all the files to TAHOE (and remove them from this current directory).
+
+###############################################################################
+NOTE: It is also possible to use the "move" command if only a single file
+has been changed/added.
+
+	git annex move <file> -t <repo_name>
+
+Another way to perform the above operation (minus the init<topic>.sh) is the
+following:
+
+	git annex add <file1> .. <fileN>
+	git commit -m "some message"
+	git annex sync <REPONAME> --content
+	git annex drop <file1> .. <fileN>
+
+The upload*.sh commands will automatically drop files - however refer to the
+block above to see the drop command in raw form.
+###############################################################################
+
+This can be confirmed by viewing the working directory and seeing the file
+is RED.
+
+	ls -la
+
+------
+Step 3
+------
+Perform a reboot of the box.
+
+	sudo reboot
+
+###############################################################################
+NOTE: This will stop the repo and make it no longer accessible.
+###############################################################################
+
+------
+Step 4
+------
+Login as git user:
+
+	enable<topic>.sh
+
+After the completion of this command - you should see "Node has started
+successfully".
+
+------
+Step 5
+------
+Pull down the file you originally uploaded. This will relink the file.
+Run the commands (this may take a long time):
+
+	cd /opt/git/<topic>_repo
+
+	downloadfile.sh <file>
+	or
+	downloadall.sh <topic>
+
+Check the download by running the command below:
+
+	ls -la
+
+===============================================================================
+SECTION 4: Automatically Enabling Repo
+===============================================================================
+------
+Step 1
+------
+Login to the host and do the following:
+
+	sudo vim /etc/rc.local
+
+Step 1A
+-------
+Add to 'rc.local' the following for every repo you have:
+
+	enable<topic>.sh
+
+
+===============================================================================
+SECTION 5: Setup git-annex-tahoe with DAM3ON
+===============================================================================
+First we need to confirm some things on the PEP.
+
+------
+Step 1
+------
+Everything located in '/etc/webxacml/annex/' and '/etc/webxacml/tahoepep/' on
+the PEP host must be set to executable:
+
+	sudo chmod +x /etc/webxacml/annex/*
+	sudo chmod +x /etc/webxacml/tahoepep/*
+
+------
+Step 2
+------
+On the PEP host also be sure that the following is added to visudo:
+
+	ALL ALL=(ALL:ALL) NOPASSWD: /etc/webxacml/annex/annex_prep
+	ALL ALL=(ALL:ALL) NOPASSWD: /etc/webxacml/annex/php_move
+	ALL ALL=(ALL:ALL) NOPASSWD: /etc/webxacml/tahoepep/tahoepepWrapper.py
+
+------
+Step 3
+------
+Create a log for TAHOEPEP:
+
+	sudo touch /var/log/tahoe_pep.log
+	sudo chmod 777 /var/log/tahoe_pep.log
+
+------
+Step 4
+------
+Update the XACML policies to be sure that your user credentials are
+allowed.
+
+------
+Step 5
+------
+A PGP keypair must be created between the PDP and PEP servers.
+The private key will be stored on the PDP located in '/etc/webxacml/'
+The public key will be stored on the PEP located in '/etc/webxacml/'
+
+Set configuration files ('/etc/webxacml/config.xml') to point to these
+accordingly.
+
+A preconfigured keypair is already included in the build with the file
+names of 'pdp.pub' for the PEP (public key) and the PDP key is
+'Git_Annex_Radio_Repo_Key_priv.asc' (private key).
+
+===============================================================================
+SECTION 6: Using git-annex-tahoe with DAM3ON
+===============================================================================
+Head to the PEP hosts web interface. You will need to know the repo name
+you wish to access (and optionally the exact file you want to download).
+
+Viewing Files
+=============
+Enter as a 'resource' "<topic>_repo".
+Use the action 'View'
+
+Uploading Files
+===============
+Enter as a 'resource' "<topic>_repo".
+Use the action 'Upload'
+
+Follow the prompts as needed.
+
+Downloading Files
+=================
+Enter as a 'resource' "file://<topic>_repo/<file>".
+Use the action 'Download'

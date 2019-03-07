@@ -1,0 +1,112 @@
+#!/usr/bin/env python
+# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+# A simple native messaging host. Shows a Tkinter dialog with incoming messages
+# that also allows to send message back to the webapp.
+import json
+import struct
+import sys
+import bisect
+
+import cpuinfo
+import get_quotelib
+import parse_40_custom
+import sign_data_gui
+
+# On Windows, the default I/O mode is O_TEXT. Set this to O_BINARY
+# to avoid unwanted modifications of the input/output streams.
+if sys.platform == "win32":
+    import os, msvcrt
+    msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
+    msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
+
+
+# Python code to remove duplicate elements
+def f7(seq):
+    seen = set()
+    seen_add = seen.add
+    return [x for x in seq if not (x in seen or seen_add(x))]
+
+def get_scard():
+    outmsg = sign_data_gui.getSignature()
+
+    # Send to stdout
+    sys.stdout.write(struct.pack('I', len(outmsg)))
+    sys.stdout.write(outmsg)
+    sys.stdout.flush()
+
+
+# DO MAGIC HERE
+def get_tpm(text):
+    jtext = json.loads(text)  # Convert to a JSON object
+
+    sableyn = jtext['sable']
+    pidx = jtext['pcr_indices']
+    cpuv = "unknown"
+    pcrinfo = {'spec': '1.2', 'type': 'attest', 'status': 'success'}
+    pcrinfo['pcrinfo'] = {}
+
+    if sableyn:
+        if cpuinfo.cpu._is_AMD():
+            pcrinfo['pcrinfo']['sable'] = get_quotelib.getPcrVal(17)
+            cpuv = "amd"
+            bisect.insort(pidx, 17)
+        elif cpuinfo.cpu._is_Intel():
+            pcrinfo['pcrinfo']['sable'] = get_quotelib.getPcrVal(18)
+            bisect.insort(pidx, 18)
+            cpuv = "intel"
+        pidx = f7(pidx)
+        pcrinfo["cpuv"] = cpuv
+
+    quote = get_quotelib.main(jtext['nonce'], pidx)
+    uuid = get_quotelib.getUuid()
+    files = parse_40_custom.file_details()
+
+    for pcr in pidx:
+        if pcr != 19:
+            pcrinfo['pcrinfo']['pcr' + str(pcr)] = get_quotelib.getPcrVal(pcr)
+    pcrinfo['pcrinfo']['indices'] = pidx
+
+    pcrinfo['tpm_quote'] = quote
+    pcrinfo['uuid'] = uuid
+    pcrinfo['files'] = files
+    outmsg = json.dumps(pcrinfo)
+
+    # Send to stdout
+    sys.stdout.write(struct.pack('I', len(outmsg)))
+    sys.stdout.write(outmsg)
+    sys.stdout.flush()
+
+
+# Thread that reads messages from the webapp.
+def read_thread_func(queue):
+    message_number = 0
+
+    while 1:
+        # Read the message length (first 4 bytes).
+        text_length_bytes = sys.stdin.read(4)
+        if len(text_length_bytes) == 0:
+            if queue:
+                queue.put(None)
+            sys.exit(0)
+        # Unpack message length as 4 byte integer.
+        text_length = struct.unpack('i', text_length_bytes)[0]
+        # Read the text (JSON object) of the message.
+        text = sys.stdin.read(text_length).decode('utf-8')
+        jtext = json.loads(text)
+        if jtext["type"] == "attest":
+            get_tpm(text)
+        elif jtext["type"] == "scard":
+            get_scard()
+
+
+def Main():
+    read_thread_func(None)
+    sys.exit(0)
+
+
+if __name__ == '__main__':
+    # x = {'nonce':'12345678901234567890', 'pcr_indices':[19], 'sable':True}
+    # get_tpm(json.dumps(x))
+    Main()

@@ -1,0 +1,283 @@
+###############################################################################
+DATABASE CONFIGURATION FOR DAM3ON SYSTEM
+
+Last Updated: 03-06-2019
+
+Adam T. Wiethuechter <adam.wiethuechter@critical.com>
+Critical Technologies Inc. (CTI)
+###############################################################################
+###############################################################################
+Document Format
+===============
+Each section of this document is separated by '=' bars above and below its
+title and can be taken independently. However it is strongly recommended to do
+these sections in the order presented in this document unless otherwise noted.
+
+Subsections are denoted by '=' or '-' markings below the title. The
+use of either '=' or '-' is dependent on the author and styling of the
+section to make information be easily parsed.
+
+The above markings can span the document on full lines, however are not
+required to.
+
+Important notation information and details can be found between '#' marking
+lines that extend across the documents 80 character limit.
+###############################################################################
+
+===============================================================================
+SECTION 0: Introduction
+===============================================================================
+This document is a support document for installing the DAM3ON system.
+
+Here you will be guided in the configuration of the database component of the
+system.
+
+You will need 'sudo' permissions during this install process.
+
+If you are using phpMyAdmin you can login by going to the following
+address:
+
+	<FQDN>/ctipma
+
+###############################################################################
+The /ctipma is actually set during the phpMyAdmin installation.
+This may be different for you.
+###############################################################################
+
+Use the following credentials:
+
+	USERNAME: phpmyadmin
+
+##############################################################################
+Everything executed here can also be performed on the command line. However
+this is not how CTI performed installation so it is not documented here.
+
+Refer to the MySQL documentation for details on how to create databases,
+tables and users via the command line.
+###############################################################################
+
+===============================================================================
+SECTION 1: Database Creation Using phpMyAdmin (Import)
+===============================================================================
+We will import the SQL files found in 'db+pdp/sql' to create our databases.
+
+###############################################################################
+This will be done for every file EXCEPT 'users.sql'
+
+NOTE: There is a version of 'users.sql' that is supported under this
+import section. Check that the 'users.sql' file has the following for
+each user section:
+
+CREATE USER '<user>'@'<ip/netmask>' IDENTIFIED WITH mysql_native_password \
+AS '<password>';
+GRANT USAGE ON *.* TO '<user>'@'<ip/netmask>' REQUIRE NONE WITH \
+ MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 \
+MAX_USER_CONNECTIONS 0;
+###############################################################################
+
+###############################################################################
+These files were exported from a working grid but additional SQL commands
+were added to allow for the creation of the database via importing. The commands
+are below:
+
+CREATE DATABASE IF NOT EXISTS <db_name> DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE <db_name>;
+
+In case these modified files are not available then the following section
+can be done instead using phpMyAdmin.
+###############################################################################
+
+------
+Step 1
+------
+Login and while on the main page go to the Import tab.
+
+------
+Step 2
+------
+Select "Choose file" and navigate to the SQL file you want to upload. This will
+be located in the folder 'sql' folder found in this directory.
+
+Upload the file by hitting the "Go" button. Do not change any settings on the
+page, leave them as the default values.
+
+###############################################################################
+This uploaded file will create the database, tables and fill in any data
+needed into the database to start it.
+###############################################################################
+
+------
+Step 3
+------
+Once its uploaded you should see a confirmation. Hit the phpMyAdmin logo in
+the top left corner to return to the main page.
+
+===============================================================================
+SECTION 2: Database Creation Using phpMyAdmin (Manual)
+===============================================================================
+Assuming you don't have the edited SQL files for import we must create the
+database manually and use then perform the import.
+
+------
+Step 1
+------
+Login to phpMyAdmin.
+
+------
+Step 2
+------
+We will now perform the very tedious task of importing the SQL into the
+database. We will start with the databases themselves.
+
+We must create the following databases:
+	access_tokens, approved_file_db, cap_alerts, cti_test, nonce_db,
+		pnonce_db, roles_db, xacml3_policy
+
+
+###############################################################################
+You will repeat the steps (Steps 2A-G) below for every item in the list above.
+###############################################################################
+
+Step 2A
+-------
+While on the main page go to the Database tab. This is located right above
+the text "General settings".
+
+Step 2B
+-------
+Under the section "Create database", in the textbox with the prefilled text
+of "Database name" enter the database name from the selection above.
+
+Do not change the drop down to the right. Leave it set to "Collation".
+
+Hit the "Create" button to the right the drop down box\ to create the
+database with the desired name.
+
+Step 2C
+-------
+You will be dropped into a screen to create tables. DO NOT create tables.
+Hit the phpMyAdmin logo in the top left corner to return to the main
+page.
+
+Step 2D
+-------
+While on the main page select the database you just created in the left
+hand bar.
+
+Step 2E
+-------
+Now select the "Import" tab.
+
+Step 2F
+-------
+Select "Choose file" and navigate to the SQL file with the same. This will
+be located in the folder 'sql' found in this directory.
+
+Upload the file by hitting the "Go" button. Do not change any settings on the
+page, leave them as the default values.
+
+###############################################################################
+This uploaded file will create the tables and fill in any data needed into
+the database to start it.
+###############################################################################
+
+Step 2G
+-------
+Once its uploaded you should see a confirmation. Hit the phpMyAdmin logo in
+the top left corner to return to the main page.
+
+===============================================================================
+SECTION 3: User Creation Using phpMyAdmin (Manual)
+===============================================================================
+------
+Step 1
+------
+Login to phpMyAdmin.
+
+------
+Step 2
+------
+We will now create the users. This is fairly involved and requires a lot
+of information.
+
+We must create the following users:
+	alert_user, critical, file_user, nonce_user, pip_get_hashes,
+	pnonce_user, role_user, token_user
+
+###############################################################################
+You will repeat the steps (Steps 2A-2I) below for every item in the list above.
+###############################################################################
+
+Step 2A
+-------
+While on the front page for phpMyAdmin select the "User accounts" tab.
+
+Step 2B
+-------
+Go down to the section titled "New" and click the link to "Add new account".
+
+Step 2C
+-------
+Select a username from the list above and enter it in the "User name" field.
+Keep the dropdown box set to "Use text field".
+
+Step 2D
+-------
+For the "Host name" field set the dropdown box to "Use text field" and in
+the textbox enter the following:
+
+	<IP Network>/<Netmask>
+
+###############################################################################
+This section will be very confusing to most and requires intimate knowledge
+of the network that the PDP server is sitting in.
+
+The first segment of the "Host name" is the IP Network. This will be your
+typical IP network address. The second half (after the '/') is your networks
+netmask.
+
+As an example if the PDP server is sitting on network with the
+address of "192.168.0.22" with a netmask of "/24" (255.255.255.0) then
+the "Host name" would be set to "192.168.0.0/255.255.255.0"
+###############################################################################
+
+###############################################################################
+Note that the user "pip_get_hashes" is unique in that its "Host name" must
+be set to "localhost" if the database is co-located on the same box as the
+PDP.
+
+For this build documentation this is the case.
+###############################################################################
+
+Step 2E
+-------
+Enter a password (or generate one) for the user.
+
+Step 2F
+-------
+Do not change any of the other settings for the user. Leave everything
+as their default values.
+
+Create the user by hitting "Go" in the bottom right hand corner.
+
+Step 2G
+-------
+Select the SQL tab.
+
+Step 2H
+-------
+In the text box enter the SQL query from 'users.sql' in the 'sql' folder
+for the respective user.
+
+Hit the "Go" button in the bottom right hand corner to execute the query.
+Once completed you will get a confirmation or failure message.
+
+###############################################################################
+You will have to change the section after the '@' for every entry to match
+what you entered for the user during its creation in phpMyAdmin.
+###############################################################################
+
+Step 2I
+-------
+Hit the phpMyAdmin logo in the top left hand corner to return to the main
+page.

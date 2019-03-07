@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<config>
+	<web_pdp_url>https://ctidev2.critical.com:8080/WebPDP/pdp</web_pdp_url>
+	<hashcheck_url>https://ctidev2.critical.com:8080/HashCheck/HashValidator</hashcheck_url>
+	<pub_nonce_api>https://ctidev4.critical.com/api/nonce.php?email=</pub_nonce_api>
+	<keystore>
+		<key_pass>assertive</key_pass>
+		<store_pass>assertive</store_pass>
+		<keystore_alias>ctidev4.critical.com</keystore_alias>
+		<keystore_path>/etc/webxacml/pep.jks</keystore_path>
+	</keystore>
+	<saml>
+		<request_issuers>
+			<issuer>ctidev4.critical.com</issuer>
+		</request_issuers>
+		<response_issuers>
+			<issuer>ctidev2.critical.com</issuer>
+		</response_issuers>
+		<assertion>
+			<issuer>ctidev2.critical.com</issuer>		
+			<subject_name_id>CTI</subject_name_id>
+			<subject_schema_location>CTI</subject_schema_location>
+		</assertion>
+		<request_id>CTI</request_id>
+		<request_destination>ctidev4.critical.com</request_destination>
+	</saml>
+	<basic>
+		<xsd>/etc/webxacml/xacml.xsd</xsd>
+		<exig>/etc/webxacml/xacml.exig</exig>
+		<log>/var/log/xacml3.log</log>
+		<debug>true</debug>
+	</basic>
+	<pgp>
+		<have_to_verify>true</have_to_verify>
+		<key_servers>
+			<server>https://sks-keyservers.net/pks/lookup?op=get&amp;search=</server> <!-- add to TestConfig -->
+			<server>http://pgp.mit.edu/pks/lookup?op=get&amp;search=</server> <!-- add to TestConfig -->
+		</key_servers>
+		<pgp_tmp_dir>/tmp/</pgp_tmp_dir> <!-- add to TestConfig -->
+		<pdp_pubkey>/etc/webxacml/pdp.pub</pdp_pubkey>
+	</pgp>
+
+	<databases>
+                <ssl>
+                        <keystore_path>/etc/webxacml/mysql_keys/keystore</keystore_path>
+                        <keystore_pw>changeit</keystore_pw>
+                </ssl>
+		<pnonce>
+			<user>pnonce_user</user>
+			<password>CriticalAardvark#25</password>
+			<db_url>jdbc:mysql://ctidev2.critical.com:4655/pnonce_db</db_url>
+			<jdbc_driver>com.mysql.jdbc.Driver</jdbc_driver>
+		</pnonce>
+		<pub_nonce>
+			<user>nonce_user</user>
+			<password>CriticalAardvark#25</password>
+			<db_url>jdbc:mysql://ctidev2.critical.com:4655/nonce_db</db_url>
+			<jdbc_driver>com.mysql.jdbc.Driver</jdbc_driver>
+		</pub_nonce>
+		<token>
+			<user>token_user</user>
+			<password>CriticalAardvark#25</password>
+			<db_url>jdbc:mysql://ctidev2.critical.com:4655/access_tokens</db_url>
+			<jdbc_driver>com.mysql.jdbc.Driver</jdbc_driver>
+		</token>
+		
+	</databases>
+
+</config>

@@ -1,0 +1,114 @@
+###############################################################################
+CLIENT ATTESTATION WITH SMART CARD EXTENSION
+
+Last Updated: 03-06-2019
+
+Adam T. Wiethuechter <adam.wiethuechter@critical.com>
+Critical Technologies Inc. (CTI)
+###############################################################################
+###############################################################################
+Document Format
+===============
+Each section of this document is separated by '=' bars above and below its
+title and can be taken independently. However it is strongly recommended to do
+these sections in the order presented in this document unless otherwise noted.
+
+Subsections are denoted by '=' or '-' markings below the title. The
+use of either '=' or '-' is dependent on the author and styling of the
+section to make information be easily parsed.
+
+The above markings can span the document on full lines, however are not
+required to.
+
+Important notation information and details can be found between '#' marking
+lines that extend across the documents 80 character limit.
+###############################################################################
+
+===============================================================================
+SECTION 0: Introduction
+===============================================================================
+This document is a support document for installing the DA3MON system.
+
+Here you will be guided in creating and using the DAM3ON system to perform
+client attestation/authentication with a smart card.
+
+System is arbitrary (Windows/Linux) however the Chrome web browser is the
+expected web browser for use with DAM3ON.
+
+Please refer to 'chrome-linux.txt' on how to install Google Chrome
+on Linux. You will also need to configure the system to work with TPM 1.2
+in the file 'attestation-tpm.txt'.
+
+If Linux is used 'sudo' permissions are required for your user.
+
+###############################################################################
+WARNING: This documented has not been tested. It has been derived from older
+notes.
+###############################################################################
+
+===============================================================================
+SECTION 1: Ubuntu Smart Card
+===============================================================================
+
+###############################################################################
+WARNING: This section has not been tested. These are derived from older notes.
+###############################################################################
+
+------
+Step 1
+------
+Be sure the following packages are installed:
+
+	pip
+		sudo apt-get install python-pip
+
+	pykcs11
+		sudo pip install pykcs11
+
+	python OpenSSL
+		sudo pip install pyopenssl
+
+------
+Step 2
+------
+Run the script 'smart_card_install.sh'.
+
+===============================================================================
+SECTION 2: Windows Smart Card
+===============================================================================
+
+###############################################################################
+WARNING: This section has not been tested. These are derived from older notes.
+###############################################################################
+
+------
+Step 1
+------
+Install the Chrome web browser and add the extension Mailvelope and also your
+custom PCR Extension. See 'authentication-pgp.txt' for details on Mailvelope
+and 'attestation-tpm.txt' for details on the PCR Extension.
+
+------
+Step 2
+------
+Install the following items for Windows:
+
+Python 2.7.X
+
+MS Visual C++ 9 for python27:
+	aka.ms/vcpython27
+
+Swig:
+	extract zip anywhere
+	put path to that folder in PATH env variable
+
+OpenSC:
+	https://github.com/OpenSC/OpenSC/releases/download/0.19.0/OpenSC-win32_0.19.0.msi
+	copy c:\program files(x86)\opensc project\pkcs11\opensc-pks11.dll to c:\windows\system32
+
+pip install pykcs11 pyopenssl
+
+------
+Step 3
+------
+Add *.bat to the executable name in the *win.json file in chrome_nm

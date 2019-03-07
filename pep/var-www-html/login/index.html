@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Multi Login Form</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/jquery-ui.css" />
+    <script src="js/jquery.min.js"></script> 
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/prefixfree.min.js"></script>
+    <script src="js/dialogmsg.js"></script>
+<link rel="icon" href="/icon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="/icon.ico" type="image/x-icon" />
+	<style>
+
+a:link {
+    color: #3283ff;
+}
+
+a:visited {
+    color: #b9a1ff;
+}
+		
+	</style>
+  </head>
+  <body>
+
+ <div style="position:fixed; top:10px; left:10px; color:yellow; font-size: 16pt; opacity: 0.85;">
+    UNCLASSIFIED
+    </div>
+        <div style="position:fixed; top:10px; color:yellow;right:10px; font-size: 16pt; opacity: 0.85;">
+    UNCLASSIFIED
+    </div>
+	<div id="dialog" title="Message">
+	</div>
+	<div id="maindiv" class="login">
+		<h1>Secure Resource Access</h1>
+                <h4 style="text-align:center;"><a href="/login/index.html?resource=documentation&action=access&go=true">Need help? Click here</a></h4>
+
+		<input id="resource" type="text" name="p" placeholder="Resource" list="resource_list" required />
+		<datalist id="resource_list">
+		</datalist>
+
+
+		<!-- All available actions go here -->
+		<select id="actions" style="width:100%;margin-bottom:10px;background-color:#154144;color:white;">
+			<option id="access" value="access">Access</option>
+			<option id="download" value="download">Download</option>
+			<option id="upload" value="upload">Upload</option>
+			<option id="view" value="view">View</option>
+			<option id="subscribe" value="subscribe">Subscribe</option>
+			<option id="post" value="post">Post</option>
+			<option id="unsubscribe" value="unsubscribe">Unsubscribe</option>
+			<option id="revoke_post" value="revoke_post">Revoke Post</option>
+			<option id="revoke_unsub" value="revoke_unsub">Revoke Unsub</option>
+			<option id="allow_unsub" value="allow_unsub">Allow Unsub</option>
+			<option id="sendkey_all" value="sendkey_all">SendKey All</option>
+			<option id="submit" value="submit">Submit</option>
+		</select>			
+
+		<input id="cctxid" type="hidden" name="cctxid" placeholder="Transaction ID" />
+		<input id="email" type="hidden" name="u" placeholder="Email" />
+		
+		<button id="first_request_access" type="submit" class="btn btn-primary btn-block btn-large">Request Access</button>
+		<button id="auth_step1" type="submit" style="visibility:hidden;" class="btn btn-primary btn-block btn-large">Request Access</button>
+		<button id="auth_step2" type="submit" style="visibility:hidden;" class="btn btn-primary btn-block btn-large">Request Access</button>
+			
+		<!-- Below is just spinny loading icon thing -->
+		<div id="container" class="loader" hidden=true><div class="round0 init"></div>
+		<div class="round1"></div><div class="round2"></div><div class="round3"></div><div class="round4"></div>
+		<div class="round5"></div><div class="round6"></div><div class="round7"></div><div class="round8"></div>
+		<div class="round9"></div><div class="round10"></div></div>
+	</div>
+	<script src="js/cti.js"></script>
+	<script type="text/javascript">
+	function findGetParameter(parameterName) {
+		var result = null,
+			tmp = [];
+		location.search.substr(1)
+		.split("&").forEach(function (item) {
+			tmp = item.split("=");
+			if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+			    });
+		return result;
+	}
+	var res = findGetParameter("resource");
+	var act = findGetParameter("action");
+	var go = findGetParameter("go");
+	if(res != null){
+		document.getElementById("resource").value = res;
+	}
+	
+	if(act != null){
+		var opt = document.getElementById(act);
+		if(opt){
+			opt.selected = true;
+		}
+	}
+	if(go != null){
+		var butt = document.getElementById("first_request_access");
+		if(butt.style.visibility == "" && butt.disabled == false){
+			butt.click();
+		}
+	}
+	</script>
+
+<div style="position:fixed; bottom:10px; left:10px; right:60%; font-size: 8pt; opacity: 0.85;color:#F7F7F7;">
+This research was developed with funding from the Defense Advanced Research Projects Agency (DARPA).
+The views, opinions and/or findings expressed are those of the author(s) and should not be interpreted
+ as representing the official views or policies of the Department of Defense or the U.S. Government.
+</div>
+
+<div style="position:fixed; bottom:0; right:0; opacity: 0.65;">
+<a href="http://www.critical.com"><img src="/media/cti-logo.png" height=63 width=275></a>
+</div>
+
+  </body> 
+</html>

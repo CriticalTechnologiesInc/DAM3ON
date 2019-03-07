@@ -1,0 +1,183 @@
+###############################################################################
+XACML KEYPAIR GENERATION, EXPORT AND IMPORT FOR DAM3ON SYSTEM
+
+Last Updated: 03-06-2019
+
+Adam T. Wiethuechter <adam.wiethuechter@critical.com>
+Critical Technologies Inc. (CTI)
+###############################################################################
+###############################################################################
+Document Format
+===============
+Each section of this document is separated by '=' bars above and below its
+title and can be taken independently. However it is strongly recommended to do
+these sections in the order presented in this document unless otherwise noted.
+
+Subsections are denoted by '=' or '-' markings below the title. The
+use of either '=' or '-' is dependent on the author and styling of the
+section to make information be easily parsed.
+
+The above markings can span the document on full lines, however are not
+required to.
+
+Important notation information and details can be found between '#' marking
+lines that extend across the documents 80 character limit.
+###############################################################################
+
+===============================================================================
+SECTION 0: Introduction
+===============================================================================
+This document is a support document for installing the DAM3ON system.
+
+Here you will be guided in the creation, import or export of the XACML
+keypairs used by the system.
+
+For every server acting as a PEP an XACML keypair will be generated and their
+respective key has to be exported. This exported key is then imported into
+the PDP keystore. Likewise every PEP must have the PDP's key imported into
+their respective keystore.
+
+You will need 'sudo' permissions during this install process.
+
+For this support document each SECTION is taken independently.
+
+For every server created for a DAM3ON system you will have to follow SECTION 1,
+as this will create the keys needed as well as the servers keystore for them.
+
+Subsequent sections will be done based on the situation.
+
+The most common situation will be the inclusion of a new PEP server. For this
+you would perform SECTION 2 on the PEP server (creating an exported key), then
+perform SECTION 3 on the PDP server (with the exported key). You would also
+perform SECTION 3 on the PEP server (with an exported key from the PDP server).
+
+Generally SECTION 2 is only done once (during the creation of the server) and
+only imports (SECTION 3) happen after as new servers are added to the system.
+
+===============================================================================
+SECTION 1: Generate XACML Keypair
+===============================================================================
+Create keypair by performing the following actions:
+
+	cd /etc/webxacml/
+	sudo keytool -genkey \
+				-alias <FQDN> \
+				-keyalg RSA \
+				-keystore  <pdp|pep>-<server_alias>.jks \
+				-keysize 2048
+
+For the '-keystore' argument try to follow the naming convention above. Select
+either "pdp" or "pep" for the type of server that is being configured and then
+use the servers alias name.
+
+Set password to "assertive" and fill out information as applicable.
+
+NOTE: There will be a prompt asking for a yes/no, which is confirming the
+details entered for the various prompts before it. Yes must explicitly
+type "yes"  to continue with generating the keypair.
+
+Press return to use same password as keystore password.
+
+###############################################################################
+Example of command usage:
+
+	sudo keytool -genkey \
+				-alias ctidev2.critical.com \
+				-keyalg RSA  \
+				-keystore pdp-dev2.jks \
+				-keysize 2048
+===============================================================================
+Example out of command:
+	Enter keystore password:
+	Re-enter new password:
+	What is your first and last name?
+	  [Unknown]:
+	What is the name of your organizational unit?
+	  [Unknown]:
+	What is the name of your organization?
+	  [Unknown]:
+	What is the name of your City or Locality?
+	  [Unknown]:
+	What is the name of your State or Province?
+	  [Unknown]:
+	What is the two-letter country code for this unit?
+	  [Unknown]:
+	Is CN=Unknown, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown correct?
+	  [no]:  yes
+
+	Enter key password for <ctidev2.critical.com>
+	        (RETURN if same as keystore password):
+
+	Warning:
+	The JKS keystore uses a proprietary format. It is recommended to migrate to
+	PKCS12 which is an industry standard format using "keytool -importkeystore
+	-srckeystore pep.jks -destkeystore pep.jks -deststoretype pkcs12".
+###############################################################################
+
+===============================================================================
+SECTION 2: Export XACML Keypair
+===============================================================================
+You'll need to export the servers public key so that other entities may
+import it. You can do this with the following command:
+
+	sudo keytool -export -alias <server_fqdn> -file <server_alias>.crt \
+			-keystore <pdp|pep>-<server_alias>.jks
+
+###############################################################################
+Example of command usage:
+
+	sudo keytool -export -alias ctidev2.critcial.com -file dev2.crt \
+			-keystore pdp-dev2.jks
+###############################################################################
+
+===============================================================================
+SECTION 3: Import XACML Keypair
+===============================================================================
+You'll need to import public keys into this keystore for any entity that
+interacts with it. You can import those public keys by using the
+following command:
+
+	sudo keytool -import -trustcacerts -alias <server_fqdn> \
+			-file <some-file>.crt \
+			-keystore <pdp|pep>-<server_alias>.jks
+
+###############################################################################
+Example of command usage:
+
+	sudo keytool -import -trustcacerts -alias ctidev4.critical.com \
+			-file dev4.crt -keystore pdp-dev2.jks
+===============================================================================
+Example of command output:
+
+	adam@ctidev4:/etc/webxacml$ sudo keytool -import -trustcacerts \
+			-alias ctidev2.critical.com -file dev2.crt -keystore pdp.jks
+	Enter keystore password:
+	Owner: CN=Unknown, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown
+	Issuer: CN=Unknown, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown
+	Serial number: 271423c9
+	Valid from: Fri Feb 15 17:47:13 EST 2019 until: Thu May 16 18:47:13 EDT 2019
+	Certificate fingerprints:
+	         MD5:  ...
+	         SHA1: ...
+	         SHA256: ...
+	Signature algorithm name: SHA256withRSA
+	Subject Public Key Algorithm: 2048-bit RSA key
+	Version: 3
+
+	Extensions:
+
+	#1: ObjectId: 2.5.29.14 Criticality=false
+	SubjectKeyIdentifier [
+	KeyIdentifier [
+	...
+	]
+	]
+
+	Trust this certificate? [no]:  yes
+	Certificate was added to keystore
+
+	Warning:
+	The JKS keystore uses a proprietary format. It is recommended to migrate to
+	PKCS12 which is an industry standard format using "keytool -importkeystore
+	-srckeystore pep.jks -destkeystore pep.jks -deststoretype pkcs12".
+###############################################################################

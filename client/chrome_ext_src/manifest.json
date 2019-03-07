@@ -1,0 +1,23 @@
+{
+  "manifest_version": 2,
+
+  "name": "Critical PCR Extension",
+  "description": "This extension calls a native program to either: request the TPM sign a set of PCR values, or request a smart card to sign a nonce.",
+  "version": "2.2.1",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+	"default_popup": "popup.html"
+  },
+  "permissions": [
+    "nativeMessaging",
+	"storage"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [{
+    "js": ["pcr.js"],
+    "matches": ["https://ctidev4.critical.com/login/*",	"https://swdemo4.critical.com/login/*", "https://ctidev5.critical.com/login/*"]
+  }]
+}

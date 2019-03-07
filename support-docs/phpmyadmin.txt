@@ -1,0 +1,178 @@
+###############################################################################
+PHPMYADMIN INSTALLATION AND CONFIGURATION
+
+Last Updated: 03-06-2019
+
+Adam T. Wiethuechter <adam.wiethuechter@critical.com>
+Critical Technologies Inc. (CTI)
+###############################################################################
+###############################################################################
+Document Format
+===============
+Each section of this document is separated by '=' bars above and below its
+title and can be taken independently. However it is strongly recommended to do
+these sections in the order presented in this document unless otherwise noted.
+
+Subsections are denoted by '=' or '-' markings below the title. The
+use of either '=' or '-' is dependent on the author and styling of the
+section to make information be easily parsed.
+
+The above markings can span the document on full lines, however are not
+required to.
+
+Important notation information and details can be found between '#' marking
+lines that extend across the documents 80 character limit.
+###############################################################################
+
+===============================================================================
+SECTION 0: Introduction
+===============================================================================
+This is a support document for installing the DA3MON system.
+
+Here you will be guided in installing of the optional phpMyAdmin. You will
+also fix some issues related to it.
+
+You will need 'sudo' permissions during this install process.
+
+===============================================================================
+SECTION 1: Installing phpMyAdmin
+===============================================================================
+------
+Step 1
+------
+Get PHPMyAdmin from apt.
+
+	sudo apt install phpmyadmin
+
+During the apt install a pop-up windows will appear in the
+terminal asking for various configuration selections.
+
+Step 1A
+-------
+Select 'apache2' by using space when prompted between 'apache2' and 'lighttpd'
+
+###############################################################################
+NOTE: You must select your option using the space key. Hit enter to
+confirm the selection.
+###############################################################################
+
+Step 1B
+-------
+When prompted for database configuration select 'yes' to configure
+with 'dbconfig-common'
+
+Step 1C
+-------
+Enter a password and make note of it.
+
+===============================================================================
+SECTION 2: Configuration
+===============================================================================
+------
+Step 1
+------
+Save the configuration file as a back up, then open.
+
+	sudo cp /etc/phpmyadmin/apache.conf \
+		/etc/phpmyadmin/apache.conf.orig
+	sudo nano /etc/phpmyadmin/apache.conf
+
+Step 1A
+-------
+Change "Alias /phpmyadmin" field to anything that isn't the default.
+
+	Alias /phpmyadmin /usr/share/phpmyadmin
+	to
+	Alias /ctipma /usr/share/phpmyadmin
+
+===============================================================================
+SECTION 3: Login Fix
+===============================================================================
+
+Due to PHPMyAdmin not allowing you to login via "root" user
+on the webpage we must elevate the privileges of the default
+"phpmyadmin" user to a global level.
+
+Step 1
+-------
+Login to mysql in the terminal:
+
+	sudo mysql -u root -p
+
+###############################################################################
+NOTE: The password here will be the one set in SECTION 3.
+###############################################################################
+
+Step 1A
+-------
+Run the following commands and exit back to main terminal:
+
+	GRANT ALL PRIVILEGES ON *.* TO 'phpmyadmin'@'localhost' WITH GRANT OPTION;
+	FLUSH PRIVILEGES;
+	exit
+
+===============================================================================
+SECTION 4: Importing Fix
+===============================================================================
+
+To fix an importing issue perform the following actions.
+
+###############################################################################
+This was as of 02-16-2019 and the edits done here were ad-hoc to make things
+work to complete the cookbook.
+
+The following links were used as source for the changes made below.
+https://stackoverflow.com/a/51080157/4553304
+https://stackoverflow.com/a/50536059/4553304
+###############################################################################
+
+Step 1
+------
+We must change the following file:
+
+	sudo cp /usr/share/phpmyadmin/libraries/sql.lib.php \
+			/usr/share/phpmyadmin/libraries/sql.lib.php.orig
+	sudo nano /usr/share/phpmyadmin/libraries/sql.lib.php
+
+Step 1A
+-------
+Search for the function "PMA_isRememberSortingOrder" and replace it
+with this:
+
+	function PMA_isRememberSortingOrder($analyzed_sql_results)
+	{
+		return $GLOBALS['cfg']['RememberSorting']
+			&& ! ($analyzed_sql_results['is_count']
+				|| $analyzed_sql_results['is_export']
+				|| $analyzed_sql_results['is_func']
+				|| $analyzed_sql_results['is_analyse'])
+			&& $analyzed_sql_results['select_from']
+			&& ((empty($analyzed_sql_results['select_expr']))
+				// || (count($analyzed_sql_results['select_expr']) == 1)
+				|| ((count($analyzed_sql_results['select_expr']) == 1)
+					&& ($analyzed_sql_results['select_expr'][0] == '*')))
+			&& count($analyzed_sql_results['select_tables']) == 1;
+	}
+
+###############################################################################
+Notice the commented out line is missing a parentheses.
+###############################################################################
+
+Step 2
+------
+We must change the following file:
+
+	sudo cp /usr/share/phpmyadmin/libraries/plugin_interface.lib.php \
+			/usr/share/phpmyadmin/libraries/plugin_interface.lib.php.orig
+	sudo nano /usr/share/phpmyadmin/libraries/plugin_interface.lib.php
+
+Replace line 551 with:
+
+	if ($options != null && (is_array($options) || $options instanceof Countable) && count($options) > 0) {
+
+Step 3
+------
+Reload the service for the changes to take effect.
+
+	sudo service mysql restart
+	sudo service apache2 restart

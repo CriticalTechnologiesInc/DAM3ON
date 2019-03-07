@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="xacml3.xsl" ?>
+<Policy xmlns:xacml="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" PolicyId="xacml3-test-policy"
+        RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-overrides"
+        Version="1.0">
+	<Description>This policy is an example policy demonstrating a no requirements</Description>
+	<Target>
+		<AnyOf>
+			<AllOf>
+				<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">matrix</AttributeValue>
+					<AttributeDesignator MustBePresent="false"
+                                         Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                         AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"
+                                         DataType="http://www.w3.org/2001/XMLSchema#string"/>
+				</Match>
+			</AllOf>
+		</AnyOf>
+		<AnyOf>
+			<AllOf>
+				<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">access</AttributeValue>
+					<AttributeDesignator MustBePresent="false"
+                                         Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                                         AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+                                         DataType="http://www.w3.org/2001/XMLSchema#string"/>
+				</Match>
+			</AllOf>
+		</AnyOf>
+	</Target>
+
+	<Rule Effect="Permit" RuleId="permit_all">
+		<Description>The matrix resource allows full access</Description>
+	</Rule>
+
+	<AdviceExpressions>
+		<AdviceExpression AdviceId="ru" AppliesTo="Permit">
+			<AttributeAssignmentExpression AttributeId="resource_url">
+				<AttributeValue AttributeId="resource_url" DataType="http://www.w3.org/2001/XMLSchema#string">https://ctidev4.critical.com/matrix/</AttributeValue>
+			</AttributeAssignmentExpression>
+		</AdviceExpression>
+
+	</AdviceExpressions>
+</Policy>

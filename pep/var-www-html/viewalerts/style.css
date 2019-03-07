@@ -1,0 +1,54 @@
+   /* NOTE: The styles were added inline because Prefixfree needs access to your styles and they must be inlined if they are on local disk! */
+a:link{
+color:#6e6eff;
+}
+a:visited{
+color:#9a7bb7;
+}
+a:hover{
+color:white;
+}
+a:active{
+color:blue;
+}
+
+html { width: 100%;
+height:100%; overflow:hidden; }
+
+body {
+        width: 99%;
+        height:95%;
+		overflow:auto;
+		position:relative;
+        font-family: 'Open Sans', sans-serif;
+        background: #092756;
+        background: -moz-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%),-moz-linear-gradient(top, rgba(57,173,219,.25) 0%,
+rgba(42,60,87,.4) 100%), -moz-linear-gradient(-45deg, #0d672d 0%,
+#092756 100%);
+        background: -webkit-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), -webkit-linear-gradient(top, rgba(57,173,219,.25)
+0%,rgba(42,60,87,.4) 100%), -webkit-linear-gradient(-45deg, #0d672d 0%,#092756 100%);
+        background: -o-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), -o-linear-gradient(top, rgba(57,173,219,.25)
+0%,rgba(42,60,87,.4) 100%), -o-linear-gradient(-45deg, #0d672d 0%,#092756 100%);
+        background: -ms-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), -ms-linear-gradient(top, rgba(57,173,219,.25)
+0%,rgba(42,60,87,.4) 100%), -ms-linear-gradient(-45deg, #0d672d 0%,#092756 100%);
+        background: -webkit-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), linear-gradient(to bottom, rgba(57,173,219,.25)
+0%,rgba(42,60,87,.4) 100%), linear-gradient(135deg, #0d672d 0%,#092756 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3E1D6D', endColorstr='#092756',GradientType=1 );
+}
+.login {
+       /*  position: absolute;
+        top: 30%;
+        left: 25%;
+		right: 25%; */
+        margin: auto;
+        width:43%;
+}
+.login h1 { color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; } 
+
+
+#maindiv {
+    color: white;
+    font-family: monospace;
+    text-align: center;
+    font-size: large;  
+}

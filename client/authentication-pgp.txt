@@ -1,0 +1,98 @@
+###############################################################################
+CLIENT AUTHENTICATION WITH PGP KEYS USING MAILVELOPE
+
+Last Updated: 03-06-2019
+
+Adam T. Wiethuechter <adam.wiethuechter@critical.com>
+Critical Technologies Inc. (CTI)
+###############################################################################
+###############################################################################
+Document Format
+===============
+Each section of this document is separated by '=' bars above and below its
+title and can be taken independently. However it is strongly recommended to do
+these sections in the order presented in this document unless otherwise noted.
+
+Subsections are denoted by '=' or '-' markings below the title. The
+use of either '=' or '-' is dependent on the author and styling of the
+section to make information be easily parsed.
+
+The above markings can span the document on full lines, however are not
+required to.
+
+Important notation information and details can be found between '#' marking
+lines that extend across the documents 80 character limit.
+###############################################################################
+
+===============================================================================
+SECTION 0: Introduction
+===============================================================================
+This document is a support document for installing the DA3MON system.
+
+Here you will be guided in creating and using client PGP keys with Mailvelope
+so DAM3ON can perform client authentication.
+
+System is arbitrary (Windows/Linux) however the Chrome web browser is the
+expected web browser for use with DAM3ON.
+
+Please refer to 'chrome-linux.txt' on how to install Google Chrome
+on Linux.
+
+If Linux is used 'sudo' permissions are required for your user.
+
+===============================================================================
+SECTION 1: Mailvelope Chrome Extension
+===============================================================================
+------
+Step 1
+------
+Visit the following link:
+
+	https://chrome.google.com/webstore/detail/mailvelope/kajibbejlbohfaggdiogboambcijhkke
+
+This will drop you on the Mailvelope Chrome Store page to download and install
+into your Chrome browser.
+
+------
+Step 2
+------
+Next we will generate a PGP using Mailvelope. If you have your own key to import
+you may also do that - however it is not documented here.
+
+Step 2A
+-------
+Open up the Mailvelope extension and head to the "Manage keys" section.
+
+Step 2B
+-------
+Hit generate key and follow the prompts.
+Be sure to have the check box at the bottom "Upload public key to Mailvelope
+Key Server (can be deleted at any time)." checked.
+
+Step 2C
+-------
+You should get an email from Mailvelope which will be needed to verify the key.
+Open the attachment encrypted.asc and follow the Mailvelope prompts (the Mail
+icon that appears) to decrpyt the message and verify the key.
+
+------
+Step 3
+------
+We must also add the PEP url to verified domains for Mailvelope.
+
+Step 3A
+-------
+Go to the PEP.
+
+Step 3B
+-------
+Select the Mailvelope extension icon, select "Advanced options"
+and select "Activate on current tab" in the menu.
+
+Follow the prompts to add the domain. There is no need to change anything
+just accept the defaults that are filled in.
+
+------
+Step 4
+------
+You will also want to upload your PGP to pgp.mit.edu, sks-keyservers.net.

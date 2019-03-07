@@ -1,0 +1,223 @@
+###############################################################################
+MYSQL KEYPAIR GENERATION, EXPORT AND IMPORT FOR DAM3ON SYSTEM
+
+Last Updated: 03-06-2019
+
+Adam T. Wiethuechter <adam.wiethuechter@critical.com>
+Critical Technologies Inc. (CTI)
+###############################################################################
+###############################################################################
+Document Format
+===============
+Each section of this document is separated by '=' bars above and below its
+title and can be taken independently. However it is strongly recommended to do
+these sections in the order presented in this document unless otherwise noted.
+
+Subsections are denoted by '=' or '-' markings below the title. The
+use of either '=' or '-' is dependent on the author and styling of the
+section to make information be easily parsed.
+
+The above markings can span the document on full lines, however are not
+required to.
+
+Important notation information and details can be found between '#' marking
+lines that extend across the documents 80 character limit.
+###############################################################################
+
+===============================================================================
+SECTION 0: Introduction
+===============================================================================
+This document is a support document for installing the DAM3ON system.
+
+Here you will be guided in the creation, import or export of the MySQL
+keypairs used by the system.
+
+You will need 'sudo' permissions during this install process.
+
+For this support document each SECTION is taken independently.
+
+Generally the MySQL "Server" will be the PDP, however this is not required to
+be the case. For this reason the instructions try to be as general as
+possible.
+
+SECTION 1 should ONLY be run on the server hosting the database and only needs
+to be run once.
+
+SECTION 2-4 will be run on PEP servers as well as the PDP server to create
+access keys.
+
+===============================================================================
+SECTION 1: Generate Keypair for MySQL (Server)
+===============================================================================
+------
+Step 1
+------
+Run the following commands:
+
+	cd /etc/mysql/
+	sudo openssl genrsa 2048 > mysql-ca-key.pem
+
+	sudo openssl req -sha1 -new -x509 -nodes -days 3650 \
+			-key mysql-ca-key.pem > cacert.pem
+
+Fill out the prompts as required for the second command.
+
+------
+Step 2
+------
+Create the following file:
+
+	sudo nano v3.ext
+
+Step 2A
+-------
+Add the following to the file:
+
+	authorityKeyIdentifier=keyid,issuer
+	basicConstraints=CA:FALSE
+	keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+
+##############################################################################
+This is going to make our lives easier as we add more servers. This file
+will contain some command line arguments that can be used as an import
+to the command.
+##############################################################################
+
+------
+Step 3
+------
+Run the following commands:
+
+	sudo openssl req -sha1 -newkey rsa:2048 -days 3650 \
+		-nodes -keyout server-key.pem > server-req.pem
+
+Leave the password and optional company name fields blank.
+
+	sudo openssl rsa -in server-key.pem -out server-key.pem
+
+	sudo openssl x509 -sha1 -req -in server-req.pem -extfile v3.ext \
+		-days 3650 -CA cacert.pem -CAkey mysql-ca-key.pem \
+		-set_serial 01 > server-cert.pem
+
+------
+Step 4
+------
+Set the keys to the proper permission level:
+
+		sudo chmod 666 *.pem
+
+===============================================================================
+SECTION 2: Generate Keypair for MySQL (Client)
+===============================================================================
+
+##############################################################################
+Be sure to have the 'exported-keys.zip' created in SECTION 1, Step 5
+if you are on a different server (such as a PEP).
+##############################################################################
+
+------
+Step 1
+------
+Run the following commands:
+
+	cd ~
+	sudo openssl req -sha1 -newkey rsa:2048 -days 3650 -nodes \
+		-keyout <server_alias>.pem > req-<server_alias>.pem
+
+Leave the password and optional company name fields blank.
+
+	sudo openssl rsa -in <server_alias>.pem -out <server_alias>.pem
+
+	sudo openssl x509 -sha1 -req -in req-<server_alias>.pem -extfile v3.ext \
+		-days 3650 -CA cacert.pem -CAkey mysql-ca-key.pem \
+		-set_serial 01 > cert-<server_alias>.pem
+
+##############################################################################
+Example usage:
+
+	cd ~
+	sudo openssl req -sha1 -newkey rsa:2048 -days 3650 -nodes \
+		-keyout dev4.pem > req-dev4.pem
+
+	sudo openssl rsa -in dev4.pem -out dev4.pem
+
+	sudo openssl x509 -sha1 -req -in req-dev4.pem -extfile v3.ext \
+		-days 3650 -CA cacert.pem -CAkey mysql-ca-key.pem \
+		-set_serial 01 > cert-dev4.pem
+##############################################################################
+
+------
+Step 2
+------
+Move the files to the proper directory:
+
+	sudo mkdir /etc/webxacml/mysql_keys
+	sudo mv cacert.pem cert-<server_alias>.pem <server_alias>.pem \
+			/etc/webxacml/mysql_keys
+
+##############################################################################
+NOTE: This directory may already exist and have keys within it. These keys
+are from the bundled deliverable and are not needed. Run the following
+to remove them:
+
+	sudo rm -rf /etc/webxacml/mysql_keys/*
+##############################################################################
+
+===============================================================================
+SECTION 3: Update the Server Keystore with MySQL Keypair CA
+===============================================================================
+In this section you will update the Ubuntu system keystore to include the
+'cacert.pem' that was created. This 'cacert.pem' generally comes from the
+PDP server (which also hosts the MySQL database).
+
+------
+Step 1
+------
+Move into the following directory:
+
+	cd /usr/lib/jvm/java-8-oracle/jre/lib/security
+
+Step 1A
+-------
+Run the following command:
+
+	sudo keytool -import -trustcacerts -alias <FQDN-PDP> -file \
+		/etc/webxacml/mysql_keys/cacert.pem -keystore cacerts
+
+Step 1B
+-------
+Password for keystore is "changeit"
+Type "yes" to accept.
+
+===============================================================================
+SECTION 4: Create local Server Keystore with MySQL Keypairs
+===============================================================================
+In this section we will create a local keystore for the MySQL keypairs that
+webxacml will use.
+
+------
+Step 1
+------
+Move into the following directory
+
+	cd /etc/webxacml/mysql_keys/
+
+Step 1A
+-------
+Run the following commands:
+
+	sudo openssl x509 -outform DER -in cert-<server_alias>.pem \
+			-out <server_alias>.cert
+
+	sudo keytool -import -file <server_alias>.cert -keystore keystore \
+		-alias <FQDN>
+
+Use the password "changeit", re-enter the password to create it
+and type "yes" to trust the certificate.
+
+Step 1B
+-------
+Set the keys to the proper permission level:
+
+		cd /etc/webxacml/
+		sudo chmod 666 *.pem *.cert
