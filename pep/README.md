@@ -39,7 +39,7 @@ After installation is complete be sure to check the following files:
 /etc/webxacml/config.xml
 ```
 
-Check for for any items, such as FQDNs and passwords that are not set to the configuration you have set. Specifically any place where file paths are marked should be checked for file name and paths. Also any instance of PDP or PEP should be checked to be sure they are referenced by their alias which was set. URLs are another item that must be check as well.
+Check for any items, such as FQDNs and passwords that are not set to the configuration you have set. Specifically any place where file paths are marked should be checked for file name and paths. Also any instance of PDP or PEP should be checked to be sure they are referenced by their alias which was set. URLs are another item that must be check as well.
 
 Another item that must be done is adding to the crontab (using `sudo crontab -e`) the following line:
 ```

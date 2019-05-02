@@ -1,0 +1,137 @@
+#!/bin/bash
+#
+# Critical Technologies Inc. (CTI)
+# Adam T. Wiethuechter <adam.wiethuechter@critical.com>
+# 2019-05-02
+#
+
+source ../scripts/common.sh
+source ../scripts/keys.sh
+
+display_usage()
+{
+	echo
+	echo "Usage:"
+	echo "	sudo $0 -i <pep-server-fqdn> <pep-server-alias> <apache-tomcat-version>"
+	sudo "	sudo $0 -ki -x <pdp-key-package-location> <pdp-server-fqdn> <pdp-server-alias> <pep-server-alias>"
+	sudo "	sudo $0 -ki -m <pdp-key-package-location> <pep-server-alias> <pdp-server-fqdn> <pep-server-fqdn>"
+	echo "	sudo $0 -ke <pep-server-alias>"
+	echo "	sudo $0 -u <pdp-server-fqdn> <pep-server-fqdn>"
+	echo "	sudo $0 -c <apache-tomcat-version>"
+	echo "	$0 -h"
+	echo
+	echo "Options:"
+	echo "	-i, --pep               : Install Policy Enformement Point (PEP)"
+	echo "	-ki, --key-import" 
+	echo "		-x, --xacml         : Import XACML keys from PDP into PEP"
+	echo "		-m, --mysql         : Import MySQL keys from PDP into PEP"
+	echo "	-ke, --keys-export      : Create Key Package for PEP"
+	echo "	-u, --update            : Update configuration files for PEP"
+	echo "	-c, --clean-pep         : Clean up after PEP install"
+	echo
+}
+
+clean_pep_install_debris()
+{
+	echo "Policy Enformement Point Install Clean Up..."
+	local TOMCAT_VERSION=$1
+	sudo rm /etc/apache2/ports.conf.orig
+	sudo -s <<EOF
+	rm /usr/local/src/apache-tomcat-$TOMCAT_VERSION/conf/server.xml.orig
+EOF
+	sudo rm /etc/libapache2-mod-jk/workers.properties.orig
+	sudo rm /etc/apache2/sites-enabled/000-default-le-ssl.conf.orig
+	echo "PEP cleanup complete!"
+}
+
+update_config()
+{
+	sudo sed -i -e "s/ctidev2.critical.com/$1/g" /etc/webxacml/config.xml
+	sudo sed -i -e "s/ctidev4.critical.com/$2/g" /etc/webxacml/config.xml
+}
+
+install_pep()
+{
+	echo "Policy Enformement Point Install..."
+
+	local FQDN=$1
+	local ALIAS=$2
+	local VERSION=$3
+
+	# apt installs
+	sudo apt install -y libapache2-mod-jk libapache2-mod-php7.2 php7.2-mysql php-xml
+
+	# logs
+	sudo touch /var/log/xacml3.log
+	sudo chmod 666 /var/log/xacml3.log
+
+	# webxacml files
+	if [[ ! -d /etc/webxacml ]]
+	then
+		sudo mkdir /etc/webxacml/
+	fi
+	sudo cp -r etc-webxacml/* /etc/webxacml/
+
+	# web files
+	sudo cp -r var-www-html/* /var/www/html/
+
+	# war files
+	sudo cp WAR/* /usr/local/src/apache-tomcat-$VERSION/webapps/
+
+	# web servers config
+	apache_config $FQDN
+	# change apache fqdns to match server
+	sudo sed -i -e "s/ctidev4.critical.com/$1/g" /etc/apache2/sites-enabled/000-default-le-ssl.conf
+	tomcat_config $VERSION
+	sudo service apache2 restart
+
+	# Generate XACML keypair
+	generate_xacml_keys -e $FQDN $ALIAS
+
+	echo "PEP installation complete!"
+	echo "Please now run the following command: sudo $0 -i <pdp-key-package-location> <pdp-server-fqdn> <pdp-server-alias> <pep-server-alias>"
+}
+
+echo "DAM3ON Policy Enforcement Point (PEP) Installer Stating"
+start=$SECONDS
+
+case $1 in
+	-e|--pep)
+		install_pep $2 $3 $4
+		;;
+	-ki|--key-import)
+		case $2 in 
+			-x|--xacml)
+				import_xacml_pep_keys $3 $4 $5 $6
+				;;
+			-m|--mysql)
+				import_mysql_keypairs $3 $4 $5 $6
+				;;
+			*)
+				raise_error "Unknown argument: $2"
+				echo "Use either -x for XACML keys or -m for MySQL keys"
+				;;
+		esac
+		;;
+	-ke|--keys-export)
+		make_pep_key_package $2
+		;;
+	-c|--clean-pep)
+		clean_pep_install_debris $2
+		;;
+	-u|--update)
+		update_config $2 $3
+		;;
+	-h|--help)
+		display_usage
+		;;
+	*)
+		raise_error "Unknown argument: $1"
+		display_usage
+		;;
+esac
+end=$SECONDS
+echo "DAM3ON Policy Enforcement Point (PEP) Installer Exiting"
+
+echo "Finished script $0 on $(date)"
+echo "Duration: $((end-start)) seconds."

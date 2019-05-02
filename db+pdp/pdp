@@ -1,0 +1,136 @@
+#!/bin/bash
+#
+# Critical Technologies Inc. (CTI)
+# Adam T. Wiethuechter <adam.wiethuechter@critical.com>
+# 2019-05-02
+#
+
+source ../scripts/common.sh
+source ../scripts/keys.sh
+
+display_usage()
+{
+	echo
+	echo "Usage:"
+	echo "	sudo $0 -i <pdp-server-fqdn> <pdp-server-alias> <apache-tomcat-version>"
+	sudo "	sudo $0 -ki -x <pep-key-package-location> <pep-server-fqdn> <pep-server-alias> <pdp-server-alias>"
+	sudo "	sudo $0 -ki -m <pep-key-package-location> <pdp-server-alias> <pep-server-fqdn> <pdp-server-fqdn>"
+	echo "	sudo $0 -ke <pdp-server-alias>"
+	echo "	sudo $0 -u <pdp-server-fqdn> <pdp-server-fqdn>"
+	echo "	sudo $0 -c <apache-tomcat-version>"
+	echo "	$0 -h"
+	echo
+	echo "Options:"
+	echo "	-i, --install           : Install Policy Enformement Point (PDP)"
+	echo "	-ki, --key-import" 
+	echo "		-x, --xacml         : Import XACML keys from PDP into PEP"
+	echo "		-m, --mysql         : Import MySQL keys from PDP into PEP"
+	echo "	-ke, --keys-export      : Create Key Package for PEP"
+	echo "	-u, --update            : Update configuration files for PDP"
+	echo "	-c, --clean-pdp         : Clean up after PDP install"
+	echo
+}
+
+clean_pdp_install_debris()
+{
+	echo "Policy Enformement Point Install Clean Up..."
+	local TOMCAT_VERSION=$1
+	sudo rm /etc/apache2/ports.conf.orig
+	sudo -s <<EOF
+	rm /usr/local/src/apache-tomcat-$TOMCAT_VERSION/conf/server.xml.orig
+EOF
+	sudo rm /etc/libapache2-mod-jk/workers.properties.orig
+	sudo rm /etc/apache2/sites-enabled/000-default-le-ssl.conf.orig
+	sudo rm /usr/share/phpmyadmin/libraries/sql.lib.php.orig /
+	sudo rm /usr/share/phpmyadmin/libraries/plugin_interface.lib.php.orig
+	sudo rm /etc/webxacml/mod-db-api.py.orig
+	echo "PDP cleanup complete!"
+}
+
+update_config()
+{
+
+}
+
+install_pdp()
+{
+	echo "Policy Enformement Point Install..."
+
+	local FQDN=$1
+	local ALIAS=$2
+	local VERSION=$3
+
+	# apt installs
+	sudo apt install -y libapache2-mod-jk libapache2-mod-php7.2 php7.2-mysql php-xml
+
+	# logs
+	sudo touch /var/log/xacml3.log
+	sudo chmod 666 /var/log/xacml3.log
+
+	# webxacml files
+	if [[ ! -d /etc/webxacml ]]
+	then
+		sudo mkdir /etc/webxacml/
+	fi
+	sudo cp -r etc-webxacml/* /etc/webxacml/
+
+	# war files
+	sudo cp WAR/* /usr/local/src/apache-tomcat-$VERSION/webapps/
+
+	# web servers config
+	apache_config $FQDN
+	# change apache fqdns to match server
+	sudo sed -i -e "s/ctidev2.critical.com/$1/g" /etc/apache2/sites-enabled/000-default-le-ssl.conf
+	tomcat_config $VERSION
+	sudo service apache2 restart
+
+	# Generate XACML keypair
+	generate_xacml_keys -d $FQDN $ALIAS
+
+	echo "PDP installation complete!"
+	echo "Please now run the following command: sudo $0 -ki -x <pep-key-package-location> <pep-server-fqdn> <pep-server-alias> <pdp-server-alias>"
+}
+
+echo "DAM3ON Policy Decision Point (PDP) Installer Stating"
+start=$SECONDS
+
+case $1 in
+	-i|--install)
+		install_pdp $2 $3 $4
+		;;
+	-ki|--key-import)
+		case $2 in 
+			-x|--xacml)
+				import_xacml_pdp_keys $3 $4 $5 $6
+				;;
+			-m|--mysql)
+				import_mysql_keypairs $3 $4 $5 $6
+				;;
+			*)
+				raise_error "Unknown argument: $2"
+				echo "Use either -x for XACML keys or -m for MySQL keys"
+				;;
+		esac
+		;;
+	-ke|--keys-export)
+		make_pdp_key_package $2
+		;;
+	-c|--clean-pdp)
+		clean_pdp_install_debris $2
+		;;
+	-u|--update)
+		update_config $2 $3
+		;;
+	-h|--help)
+		display_usage
+		;;
+	*)
+		raise_error "Unknown argument: $1"
+		display_usage
+		;;
+esac
+end=$SECONDS
+echo "DAM3ON Policy Decision Point (PDP) Installer Exiting"
+
+echo "Finished script $0 on $(date)"
+echo "Duration: $((end-start)) seconds."

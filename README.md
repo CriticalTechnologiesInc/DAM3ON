@@ -48,7 +48,7 @@ These properties can now be satisfied in several ways:
 This is a WIP, but supports most of these. We mainly don't support automated formal verification checking.
 
 ### Git/Git-annex/Tahoe
-There exists support and -some- documentation on how to utilize Git/Git-Annex whose data is stored in Tahoe. This allows a capability based file storage system to be used in conjunction with DAM3ON. Furthermore, Git-annex allows the storing of only meta-data of git objects, such that potentially sensitive files are never stored on your own server, except briefly upon request. Furthermore, the capability tokens for Tahoe are encrypted, such that your server CAN'T access a file -- only upon an end user requesting access, and then the PDP decrypting the Tahoe token, if a permit decision is given.
+There exists support and -some- documentation on how to utilize [Git/Git-Annex](http://git-annex.branchable.com/) whose data is stored in [Tahoe](https://tahoe-lafs.org/trac/tahoe-lafs). This allows a capability based file storage system to be used in conjunction with DAM3ON. Furthermore, Git-annex allows the storing of only meta-data of git objects, such that potentially sensitive files are never stored on your own server, except briefly upon request. Furthermore, the capability tokens for Tahoe are encrypted, such that your server CAN'T access a file -- only upon an end user requesting access, and then the PDP decrypting the Tahoe token, if a permit decision is given.
 
 ## Chrome
 The login system was developed for Google Chrome, although it probably works on any Chromium based browser. This section will describe how we communicate with end user systems to perform attestation and authentication, through a browser. This will cover, at a high level, the communcation between a PEP, PDP, and end user.
@@ -84,9 +84,6 @@ The first two are obvious, but usually the third is what will occur when request
 
 In the case of attestation, or smart card authentication, the login page will then signal the Chrome Extension of such, which will in turn instruct the Native host what to do (perform a TPM quote? Ask user for PIN for smart card?). This information is then passed all the way back up to the PEP, which forms a request, sends to the PDP, receives a decision, and then is either a permit or deny.
 
-## MySQL
-Included in the mysql-dbs folder are SQL files containing the structure of all the databases that are required.
-
 ## XACML Source
 We derived our implementation from the open source project Balana. Our developement environment was Eclipse Oxygen, and included is a full copy of that environment. A description of some projects included:
 - balana - base XACML/PDP implementation
@@ -99,11 +96,17 @@ We derived our implementation from the open source project Balana. Our developem
 - WebPDP - this is the Tomcat servlet that serves as the PDP/API
 - XacmlCoreCTI - this is our implementation of a PDP
 
-## Pre-built Package
-Included is a pre-built-package folder, which should include all the files necessary to stand up your own DAM3ON instance. Be sure to read the README.s Due to time/money constrains, documentation is unlikely to be fully complete, and is not fully tested.
-
 ## XACML3 Examples
-Included is a directory which contains some examples showing off some XACML3 Policies
+Included is a directory which contains some examples showing off some XACML3 Policies.
 
 # Overall
-This is a large system, and difficult to describe and document fully, especially as a prototype. If you are interested, we'd be happy to help. Feel free to get in contact - fieldsjd@critical.com
+This is a large system, and difficult to describe and document fully, especially as a prototype. If you are interested, we'd be happy to help. Feel free to get in contact with us.
+
+## Credits
+
+[Critical Technologies Inc. (CTI)](https://www.critical.com/)
+
+- **Jeremy Fields** - Development and documentation - fieldsjd@critical.com
+- **Adam Wiethuechter** - Documentation - adam.wiethuechter@critical.com
+
+Distributed under the GNU General Public License v2.0. See [LICENSE](LICENSE) for more information.
