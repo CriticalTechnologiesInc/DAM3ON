@@ -6,22 +6,12 @@ Complete the [Minimal build](minimal-build.html) before attempting to run this i
 
 ## Script Command
 ```
-./install.sh -d
-```
-
-If you wish to do a full DAM3ON install (including Minimal) use the following:
-```
-./install.sh -df
-```
-
-To perform a DAM3ON + OmniMesh install (does **NOT** include Minimal) then use the following:
-```
-./install.sh -dom
+./install.sh
 ```
 
 If the scripts/, usr-local-src/ and import/ directories are located elsewhere (not in the base-build folder with the install script) then run the following:
 ```
-./install.sh -d path/to/scripts path/to/usr-local-src path/to/imports
+./install.sh path/to/scripts path/to/usr-local-src path/to/imports
 ``` 
 
 NOTE: that the final '/' on the directory paths are missing. *THIS IS INTENTIONAL.* If you autocomplete the path in your shell it will automatically add a '/' to the end - **REMOVE IT**. The scripts **WILL** fail if it is present!

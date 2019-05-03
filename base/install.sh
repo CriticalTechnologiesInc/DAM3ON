@@ -51,8 +51,6 @@ case $1 in
         $SCRIPTS_DIR/tomcat.sh $SOURCE_DIR $IMPORTS_DIR
         $SCRIPTS_DIR/postfix.sh
         $SCRIPTS_DIR/mailman.sh $SOURCE_DIR
-        $SCRIPTS_DIR/daemontools.sh $SOURCE_DIR $IMPORTS_DIR
-        $SCRIPTS_DIR/uscpitcp.sh $SOURCE_DIR IMPORTS_DIR
 
 		# ================================================
 		# Append other installer scripts after this point!
