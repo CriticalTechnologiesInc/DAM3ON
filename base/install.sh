@@ -8,7 +8,7 @@ display_usage()
 {
 	echo
 	echo "Usage:"
-	echo "	sudo $0 <scripts_dir> <source_dir> <imports_dir>"
+	echo "	sudo $0 <scripts_dir> <source_dir> <imports_dir> <configs_dir>"
 	echo "	$0 -h"
 	echo
 	echo "Options:"
@@ -21,6 +21,7 @@ display_usage()
 	echo "	scripts_dir : current directory + '/scripts'"
 	echo "	source_dir  : current directory + '/usr-local-src'"
 	echo "	imports_dir : current directory + '/imports'"
+	ehco "	configs_dir : current directory + '/configs'"
 	echo
 }
 
@@ -35,27 +36,35 @@ case $1 in
 			SCRIPTS_DIR=$(pwd)/scripts
 			SOURCE_DIR=$(pwd)/usr-local-src
 			IMPORTS_DIR=$(pwd)/imports
+			CONFIGS_DIR=$(pwd)/configs
 		else
 			SCRIPTS_DIR=$2
 			SOURCE_DIR=$3
 			IMPORTS_DIR=$4
+			CONFIGS_DIR=$5
 		fi
-		sudo chmod -R +x $SCRIPTS_DIR/*
+
+		# ===================================================
+		# External Installers
+		# ===================================================
+		# unzip $IMPORTS_DIR/<package>.zip
+		# source $IMPORTS_DIR/<package>/path/to/script [options]
+
+		unzip $IMPORTS_DIR/cti-base_build_*.zip
+
+		sudo chmod -R +x $IMPORTS_DIR/*.sh
+		source $IMPORTS_DIR/cti-base_build_*/install.sh
 
 		# =================================================
 		# DAM3ON Build
 		# =================================================
 
+		sudo chmod -R +x $SCRIPTS_DIR/*
 		$SCRIPTS_DIR/dmcryptluks.sh
         $SCRIPTS_DIR/java8.sh $SOURCE_DIR
-        $SCRIPTS_DIR/tomcat.sh $SOURCE_DIR $IMPORTS_DIR
+        $SCRIPTS_DIR/tomcat.sh $SOURCE_DIR $CONFIGS_DIR
         $SCRIPTS_DIR/postfix.sh
         $SCRIPTS_DIR/mailman.sh $SOURCE_DIR
-
-		# ================================================
-		# Append other installer scripts after this point!
-		# ================================================
-		# souce /path/to/script [options]
 
 		end=$SECONDS
 		echo "Finished script $0 on $(date)"
