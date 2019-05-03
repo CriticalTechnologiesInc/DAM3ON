@@ -87,6 +87,9 @@ install_pdp()
 	# Generate XACML keypair
 	generate_xacml_keys -d $FQDN $ALIAS
 
+	# Generate MySQL keypair
+	generate_mysql_keys $ALIAS $FQDN
+
 	echo "PDP installation complete!"
 	echo "Please now run the following command: sudo $0 -ki -x <pep-key-package-location> <pep-server-fqdn> <pep-server-alias> <pdp-server-alias>"
 }
@@ -104,7 +107,7 @@ case $1 in
 				import_xacml_pdp_keys $3 $4 $5 $6
 				;;
 			-m|--mysql)
-				import_mysql_keypairs $3 $4 $5 $6
+				import_mysql_pdp_keypairs $3 $4 $5 $6
 				;;
 			*)
 				raise_error "Unknown argument: $2"

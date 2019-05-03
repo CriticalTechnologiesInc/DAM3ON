@@ -105,7 +105,7 @@ case $1 in
 				import_xacml_pep_keys $3 $4 $5 $6
 				;;
 			-m|--mysql)
-				import_mysql_keypairs $3 $4 $5 $6
+				import_mysql_pep_keypairs $3 $4 $5 $6
 				;;
 			*)
 				raise_error "Unknown argument: $2"
