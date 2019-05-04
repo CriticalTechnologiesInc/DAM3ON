@@ -5,7 +5,41 @@ Please read the slide deck DAM3ON2018.pdf in the media folder first. It is the b
 
 DAM3ON's attestation feature was built around it's sister project, [SABLE](https://sable.critical.com/). DAM3ON can be utilized without SABLE, but won't be able to perform any attestation related features.
 
-## XACML
+## Installation
+
+There are a lot of inter-dependent components in the DAM3ON system, making it hard to give one clear isntall process. The cleanest way to install DAM3ON (in our experience) is by starting with a PDP, then PEP and finally Client devices.
+
+Please refer to the [INSTALL](INSTALL) document or individual INSTALL documents for each component for details on how to install them.
+
+## Using DAM3ON Cheat Sheet
+
+This section will detail the various ways to use DAM3ON. At lot of this content can also be found in various other documents here. This is just a collection of them for easy reference.
+
+### Upload / Download Files (w/o git-annex-tahoe)
+resource: upload_data_mining
+action: access / upload
+
+### Access Resources
+This is a list of the various resources available to you by default.
+
+#### authonly-pgp
+PGP based authentication test
+
+#### attestonly
+TPM attestation test
+
+#### pgpauthattest
+TPM attestation and PGP authentication test
+
+#### pap
+Policy Administration Point
+
+### Upload / Download Files (w/ git-annex-tahoe)
+See Section 6 of 'git-annex/git-annex-cookbook.txt'
+
+---
+
+## XACML Overview
 In DAM3ON, there are primarily three servers used. This is arbitrary, and everything could be on one, two, or more servers. It's purely for seperation of services, which makes it easier to demonstrate and reason about.
 
 - Server #1
@@ -96,10 +130,9 @@ We derived our implementation from the open source project Balana. Our developem
 - WebPDP - this is the Tomcat servlet that serves as the PDP/API
 - XacmlCoreCTI - this is our implementation of a PDP
 
-## XACML3 Examples
-Included is a directory which contains some examples showing off some XACML3 Policies.
+---
 
-# Overall
+## Support
 This is a large system, and difficult to describe and document fully, especially as a prototype. If you are interested, we'd be happy to help. Feel free to get in contact with us.
 
 ## Credits

@@ -1,0 +1,65 @@
+## Building DAM3ON
+
+DAM3ON is a highly dynamic system with many inter-dependent components. As such it is very hard to build blindly using static instructions. The cookbooks presented in this deliverable are the process that CTI has used to create the system. However, user configuration and customization can deviate these instructions to the point where they are merely guides of intended use based on CTI experience.
+
+One major hurdle in this is that two services primarily use PKCS for secure communication (mysql and xacml). If you start with building a PDP system you will be unable to import public keys of PEPs as they have not been created yet. Likewise if you start with a PEP system you will have no PDP key to import.
+
+It is strongly suggested to have each different system component on different hosts - and as such the documentation will assume this is the case.
+
+## Directory Structure
+
+### base/ 
+Contains installaton files for the operating system that DAM3ON expects before starting an install of a PDP or PEP. Included here is CTI's base build along with an extension specifically for DAM3ON systems. 
+
+### db+pdp/ 
+Contains files related to the database and Policy Decision Point (PDP) components. To begin building a DAM3ON system it is suggested you start here using the cookbook titled 'db+pdp-cookbook.txt'.
+
+### pep/ 
+Contains files related to the Policy Enforcement Point (PEP) component. This should be completed after a system is configured as the 'db+pdp'. The cookbook titled 'pep-cookbook.txt' guides you through this process.
+
+### client/
+Contains files and instructions that are required on the client side of the system. This includes installation for remote attestation.
+
+### utils/
+Contains various tools created during the development process. Most of these tools should work as is, however this is not guaranteed.
+
+### scripts/
+Contains various helpful scripts that are used during installation of DAM3ON that are shared between the PDP and PEP components.
+
+### git-annex/
+Contains file pertaining to the git-annex component of the DAM3ON system.
+
+## Getting Started
+
+For a quick start simply run `package.sh --base` adding either the argument `--pdp` or `--pep` to package up a fully automated install for the target system. This will link the various scripts together for you to install and zip it up for easy transfer, including the base installer.
+
+To start be sure to run the installation script in `base/` to install required packages for the system to properly install. 
+
+After the base is installed you can begin by either installing the PDP or PEP component on the target host system. These can be packaged
+
+## After Building DAM3ON
+
+After building the system it is strongly suggested that each box be rebooted and Tomcat instances refreshed to ensure latest configuration files are in use.
+
+To use the DAM3ON visit the web interface of the PEP server and be sure that your client is properly configured.
+
+Be sure to run through the cookbooks in the 'client/' folder to properly set up PGP keys, and the TPM chip on your device.
+
+## Other Items of Interest
+
+There are many components to the DAM3ON system, some of which have not been documented here. This section will call out any major components missed that we would at least like to point out to the user to explore further.
+
+### Policy Administration Point (PAP)
+There is a web interface to help with creating, editing and removing policies in the DAM3ON system. This can be accessed using DAM3ON by going to the PEP and requesting access to the resource "pap".
+
+### DAM3ON Documentation
+There is limited documentation located on the PEP. This can be found by navigating to your PEP hosts web site '/docs'. WARNING: These documents are relatively out of date, but could be useful for various things.
+
+### Certificates
+Located on your PEP at the web address '/certs' are various example certificates for DAM3ON.
+
+### Utilities
+These are located in 'utils/' and are in a 'as is' state. To run any of the file perform the following command:
+```
+	java -jar <util-file>
+```
