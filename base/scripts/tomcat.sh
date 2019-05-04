@@ -4,6 +4,12 @@
 # Adam Wiethuechter <adam.wiethuechter@critical.com>
 # April 21, 2019
 
+source common.sh
+
+PACKAGE_NAME="Apache Tomcat"
+
+install_header $PACKAGE_NAME
+
 sudo cp $1/apache-tomcat-8.5.40.tar.gz /usr/local/src/
 cd /usr/local/src/
 sudo tar -zxvf apache-tomcat-8.5.40.tar.gz
@@ -27,3 +33,5 @@ getent passwd | while IFS=: read -r name password uid gid gecos home shell; do
     fi
 done
 IFS=$oldIFS
+
+install_footer $PACKAGE_NAME

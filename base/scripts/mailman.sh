@@ -4,6 +4,12 @@
 # Adam Wiethuechter <adam.wiethuechter@critical.com>
 # April 21, 2019
 
+source common.sh
+
+PACKAGE_NAME="Mailman"
+
+install_header $PACKAGE_NAME
+
 sudo cp $1/mailman-2.1.15-with-pgp-smime_2012-08-28-patch.tar.gz /usr/local/src/
 sudo cp $1/GnuPGInterface-0.3.2.tar.gz /usr/local/src/
 
@@ -33,3 +39,5 @@ sudo cp -rp /usr/local/lib/python2.7/dist-packages/* /usr/local/mailman/pythonli
 cd /usr/local/mailman/bin
 sudo ./check_perms -f
 sudo ./check_perms -f
+
+install_footer $PACKAGE_NAME

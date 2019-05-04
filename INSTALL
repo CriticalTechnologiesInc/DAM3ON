@@ -31,7 +31,7 @@ Contains file pertaining to the git-annex component of the DAM3ON system.
 
 ## Getting Started
 
-For a quick start simply run `package.sh --base` adding either the argument `--pdp` or `--pep` to package up a fully automated install for the target system. This will link the various scripts together for you to install and zip it up for easy transfer, including the base installer.
+For a quick start simply run `package.sh --base-full` adding either the argument `--pdp` or `--pep` to package up a fully automated install for the target system. This will link the various scripts together for you to install and zip it up for easy transfer, including the base installer.
 
 To start be sure to run the installation script in `base/` to install required packages for the system to properly install. 
 

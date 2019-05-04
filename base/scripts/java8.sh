@@ -4,6 +4,12 @@
 # Adam Wiethuechter <adam.wiethuechter@critical.com>
 # April 21, 2019
 
+source common.sh
+
+PACKAGE_NAME="Java8"
+
+install_header $PACKAGE_NAME
+
 sudo apt install -y software-properties-common
 # sudo add-apt-repository ppa:webupd8team/java
 # sudo apt update
@@ -25,3 +31,5 @@ sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-8-orac
 
 sudo update-alternatives --display java
 sudo update-alternatives --display javac
+
+install_footer $PACKAGE_NAME

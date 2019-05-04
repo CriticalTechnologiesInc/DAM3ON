@@ -25,49 +25,57 @@ display_usage()
 	echo
 }
 
+start=$SECONDS
+if [ $# -gt 1 ]
+then
+	SCRIPTS_DIR=$(pwd)/scripts
+	SOURCE_DIR=$(pwd)/usr-local-src
+	IMPORTS_DIR=$(pwd)/imports
+	CONFIGS_DIR=$(pwd)/configs
+else
+	SCRIPTS_DIR=$2
+	SOURCE_DIR=$3
+	IMPORTS_DIR=$4
+	CONFIGS_DIR=$5
+fi
+
+echo "Using SCRIPTS_DIR of: $SCRIPTS_DIR"
+echo "Using SOURCE_DIR of: $SOURCE_DIR"
+echo "Using IMPORTS_DIR of: $IMPORTS_DIR"
+echo "Using CONFIGS_DIR of: $CONFIGS_DIR"
+
 case $1 in 
 	-h|--help)
 		display_usage
 		;;
 	*)
-		start=$SECONDS
-		if [[ $# == 1 ]]
-		then
-			SCRIPTS_DIR=$(pwd)/scripts
-			SOURCE_DIR=$(pwd)/usr-local-src
-			IMPORTS_DIR=$(pwd)/imports
-			CONFIGS_DIR=$(pwd)/configs
-		else
-			SCRIPTS_DIR=$2
-			SOURCE_DIR=$3
-			IMPORTS_DIR=$4
-			CONFIGS_DIR=$5
-		fi
-
 		# ===================================================
 		# External Installers
 		# ===================================================
 		# unzip $IMPORTS_DIR/<package>.zip
 		# source $IMPORTS_DIR/<package>/path/to/script [options]
 
-		unzip $IMPORTS_DIR/cti-base_build_*.zip
+		if [[ (-d $IMPORTS_DIR) && (! -z $(ls -A $IMPORTS_DIR)) ]]
+		then
+			unzip $IMPORTS_DIR/cti-base_build_*.zip
 
-		sudo chmod -R +x $IMPORTS_DIR/*.sh
-		source $IMPORTS_DIR/cti-base_build_*/install.sh
+			sudo chmod -R +x $IMPORTS_DIR/*.sh
+			source $IMPORTS_DIR/cti-base_build_*/install.sh
+		fi
 
 		# =================================================
 		# DAM3ON Build
 		# =================================================
 
-		sudo chmod -R +x $SCRIPTS_DIR/*
+		sudo chmod +x $SCRIPTS_DIR/*
 		$SCRIPTS_DIR/dmcryptluks.sh
         $SCRIPTS_DIR/java8.sh $SOURCE_DIR
         $SCRIPTS_DIR/tomcat.sh $SOURCE_DIR $CONFIGS_DIR
         $SCRIPTS_DIR/postfix.sh
         $SCRIPTS_DIR/mailman.sh $SOURCE_DIR
-
-		end=$SECONDS
-		echo "Finished script $0 on $(date)"
-		echo "Duration: $((end-start)) seconds."
 		;;
 esac
+
+end=$SECONDS
+echo "Finished script $0 on $(date)"
+echo "Duration: $((end-start)) seconds."
