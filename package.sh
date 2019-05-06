@@ -33,7 +33,7 @@ fi
 
 # grab the commit id
 commit=$(git log --oneline -1 -- .)
-package_name='dam3on_$(date +%Y%m%d)_${commit:0:7}'
+package_name=dam3on_$(date +%Y%m%d)_${commit:0:7}
 
 # create the package folder and add version info
 mkdir $package_name
