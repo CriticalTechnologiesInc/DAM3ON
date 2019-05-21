@@ -108,7 +108,7 @@ import_mysql_pep_keypairs() # good - copy from old pep script
 	sudo chmod 666 *.pem *.cert
 
 	echo "PDP MySQL keypairs imported!"
-	echo "Please now run the following command: sudo $0 -k <pep-server-alias>"
+	echo "Please now run the following command: sudo $0 -ke <pep-server-alias>"
 }
 
 import_mysql_pdp_keypairs()
@@ -139,7 +139,7 @@ import_mysql_pdp_keypairs()
 	sudo chmod 666 *.pem *.cert
 
 	echo "PDP MySQL keypairs imported!"
-	echo "Please now run the following command: sudo $0 -k <pep-server-alias>"
+	echo "Please now run the following command: sudo $0 -ke <pdp-server-alias>"
 }
 
 generate_mysql_keys()

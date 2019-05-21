@@ -89,20 +89,20 @@ install_pep()
 	generate_xacml_keys -e $FQDN $ALIAS
 
 	echo "PEP installation complete!"
-	echo "Please now run the following command: sudo $0 -i <pdp-key-package-location> <pdp-server-fqdn> <pdp-server-alias> <pep-server-alias>"
+	echo "Please now run the following command: sudo $0 -ki -x <pdp-key-package-location> <pdp-server-fqdn> <pdp-server-alias> <pep-server-alias>"
 }
 
 echo "DAM3ON Policy Enforcement Point (PEP) Installer Stating"
 start=$SECONDS
 
 case $1 in
-	-e|--pep)
+	-i|--pep)
 		install_pep $2 $3 $4
 		;;
 	-ki|--key-import)
 		case $2 in 
 			-x|--xacml)
-				import_xacml_pep_keys $3 $4 $5 $6
+				import_xacml_pdp_keys $3 $4 $5 $6
 				;;
 			-m|--mysql)
 				import_mysql_pep_keypairs $3 $4 $5 $6

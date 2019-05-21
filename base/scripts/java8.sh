@@ -28,6 +28,7 @@ sudo cp -r * /usr/lib/jvm/java-8-oracle
 
 sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-8-oracle/bin/java 100
 sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-8-oracle/bin/javac 100
+sudo update-alternatives --install /usr/bin/keytool keytool /usr/lib/jvm/java-8-oracle/bin/keytool 100
 
 sudo update-alternatives --display java
 sudo update-alternatives --display javac

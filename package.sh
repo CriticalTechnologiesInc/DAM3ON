@@ -70,6 +70,7 @@ case $2 in
 		;;
 	--client)
 		cp -rv client/ $package_name/
+		;;
 	*)
 		raise_error "Unknown argument: $2"
 		display_usage

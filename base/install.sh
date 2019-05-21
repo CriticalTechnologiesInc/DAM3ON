@@ -26,7 +26,7 @@ display_usage()
 }
 
 start=$SECONDS
-if [ $# -gt 1 ]
+if [ $# -eq 4 ]
 then
 	SCRIPTS_DIR=$(pwd)/scripts
 	SOURCE_DIR=$(pwd)/usr-local-src
@@ -69,10 +69,10 @@ case $1 in
 
 		sudo chmod +x $SCRIPTS_DIR/*
 		$SCRIPTS_DIR/dmcryptluks.sh
-        $SCRIPTS_DIR/java8.sh $SOURCE_DIR
-        $SCRIPTS_DIR/tomcat.sh $SOURCE_DIR $CONFIGS_DIR
-        $SCRIPTS_DIR/postfix.sh
-        $SCRIPTS_DIR/mailman.sh $SOURCE_DIR
+        $SCRIPTS_DIR/java8.sh $SOURCE_DIR $SCRIPTS_DIR
+        $SCRIPTS_DIR/tomcat.sh $SOURCE_DIR $CONFIGS_DIR $SCRIPTS_DIR
+        $SCRIPTS_DIR/postfix.sh $SCRIPTS_DIR
+        $SCRIPTS_DIR/mailman.sh $SOURCE_DIR $SCRIPTS_DIR
 		;;
 esac
 
