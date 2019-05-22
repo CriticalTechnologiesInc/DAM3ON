@@ -18,12 +18,12 @@ Unzip the `pep.zip` deliverable, enter into the directory and run a `sudo chmod 
 
 Run the following install commands to install a PEP:
 ```
-sudo ./install.sh -e <pep-server-fqdn> <pep-server-alias> <apache-tomcat-version>
-sudo ./install.sh -i <pdp-key-package-location> <pdp-server-fqdn> <pdp-server-alias> <pep-server-alias>
-sudo ./install.sh -s <pdp-key-package-location> <pep-server-alias> <pdp-server-fqdn> <pep-server-fqdn>
-sudo ./install.sh -k <pep-server-alias>
-sudo ./install.sh -u <pdp-server-fqdn> <pep-server-fqdn>
-sudo ./install.sh -c <apache-tomcat-version>
+sudo ./pep -i <pep-server-fqdn> <pep-server-alias> <apache-tomcat-version>
+sudo ./pep -ki -x <pdp-key-package-location> <pdp-server-fqdn> <pdp-server-alias> <pep-server-alias>
+sudo ./pep -ki -m <pdp-key-package-location> <pep-server-alias> <pdp-server-fqdn> <pep-server-fqdn>
+sudo ./pep -ke <pep-server-alias>
+sudo ./pep -u <pdp-server-fqdn> <pep-server-fqdn>
+sudo ./pep -c <apache-tomcat-version>
 ```
 
 The `<pdp-key-package-location>` is from the PDP install and should be moved onto your target host and be unzipped for this installation.
