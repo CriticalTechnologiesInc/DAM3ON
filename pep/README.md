@@ -52,7 +52,7 @@ Be sure to copy the created key package (located in `~/Downloads`) onto the PDP 
 
 ## Manual Install
 
-See the [pep-cookbook](pep-cookbook.md) for detailed instruction on how to install the PEP.
+See the [pep-cookbook](../support-docs/pep-cookbook.md) for detailed instruction on how to install the PEP.
 
 ## Credits
 

@@ -9,7 +9,7 @@ DAM3ON's attestation feature was built around it's sister project, [SABLE](https
 
 There are a lot of inter-dependent components in the DAM3ON system, making it hard to give one clear isntall process. The cleanest way to install DAM3ON (in our experience) is by starting with a PDP, then PEP and finally Client devices.
 
-Please refer to the [INSTALL](INSTALL) document or individual INSTALL documents for each component for details on how to install them.
+Please refer to the [INSTALL](INSTALL) document or individual INSTALL/README documents for each component for details on how to install them.
 
 ## Using DAM3ON Cheat Sheet
 

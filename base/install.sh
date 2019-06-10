@@ -21,12 +21,12 @@ display_usage()
 	echo "	scripts_dir : current directory + '/scripts'"
 	echo "	source_dir  : current directory + '/usr-local-src'"
 	echo "	imports_dir : current directory + '/imports'"
-	ehco "	configs_dir : current directory + '/configs'"
+	echo "	configs_dir : current directory + '/configs'"
 	echo
 }
 
 start=$SECONDS
-if [ $# -eq 4 ]
+if [ ! $# -eq 4 ]
 then
 	SCRIPTS_DIR=$(pwd)/scripts
 	SOURCE_DIR=$(pwd)/usr-local-src
@@ -55,13 +55,13 @@ case $1 in
 		# unzip $IMPORTS_DIR/<package>.zip
 		# source $IMPORTS_DIR/<package>/path/to/script [options]
 
-		if [[ (-d $IMPORTS_DIR) && (! -z $(ls -A $IMPORTS_DIR)) ]]
-		then
-			unzip $IMPORTS_DIR/cti-base_build_*.zip
-
-			sudo chmod -R +x $IMPORTS_DIR/*.sh
-			source $IMPORTS_DIR/cti-base_build_*/install.sh
-		fi
+		# if [[ (-d $IMPORTS_DIR) && (! -z $(ls -A $IMPORTS_DIR)) ]]
+		# then
+		#	unzip $IMPORTS_DIR/cti-base_build_*.zip
+		#
+		#	sudo chmod -R +x $IMPORTS_DIR/*.sh
+		#	source $IMPORTS_DIR/cti-base_build_*/install.sh
+		# fi
 
 		# =================================================
 		# DAM3ON Build

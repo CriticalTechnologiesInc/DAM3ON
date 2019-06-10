@@ -13,27 +13,22 @@ display_usage()
 	echo
 	echo "Usage:"
 	echo "	sudo $0 -i <pdp-server-fqdn> <pdp-server-alias> <apache-tomcat-version>"
-	sudo "	sudo $0 -ki -x <pep-key-package-location> <pep-server-fqdn> <pep-server-alias> <pdp-server-alias>"
-	sudo "	sudo $0 -ki -m <pep-key-package-location> <pdp-server-alias> <pep-server-fqdn> <pdp-server-fqdn>"
+	echo "	sudo $0 -ki -x <pep-key-package-location> <pep-server-fqdn> <pep-server-alias> <pdp-server-alias>"
 	echo "	sudo $0 -ke <pdp-server-alias>"
-	echo "	sudo $0 -u <pdp-server-fqdn> <pdp-server-fqdn>"
 	echo "	sudo $0 -c <apache-tomcat-version>"
-	echo "	$0 -h"
 	echo
 	echo "Options:"
 	echo "	-i, --install           : Install Policy Enformement Point (PDP)"
 	echo "	-ki, --key-import" 
 	echo "		-x, --xacml         : Import XACML keys from PDP into PEP"
-	echo "		-m, --mysql         : Import MySQL keys from PDP into PEP"
 	echo "	-ke, --keys-export      : Create Key Package for PEP"
-	echo "	-u, --update            : Update configuration files for PDP"
 	echo "	-c, --clean-pdp         : Clean up after PDP install"
 	echo
 }
 
 clean_pdp_install_debris()
 {
-	echo "Policy Enformement Point Install Clean Up..."
+	echo "Policy Enforcement Point Install Clean Up..."
 	local TOMCAT_VERSION=$1
 	sudo rm /etc/apache2/ports.conf.orig
 	sudo -s <<EOF
@@ -45,11 +40,6 @@ EOF
 	sudo rm /usr/share/phpmyadmin/libraries/plugin_interface.lib.php.orig
 	sudo rm /etc/webxacml/mod-db-api.py.orig
 	echo "PDP cleanup complete!"
-}
-
-update_config()
-{
-
 }
 
 install_pdp()
@@ -84,17 +74,50 @@ install_pdp()
 	tomcat_config $VERSION
 	sudo service apache2 restart
 
-	# Generate XACML keypair
+	# Generate XACML keypair (SECTION 2)
 	generate_xacml_keys -d $FQDN $ALIAS
+
+	# INSTALL MYSQL STUFF (SECTION 3)
+	sudo apt install mysql-server mysql-client
+	sudo mysql_secure_installation
+	sudo cp /etc/mysql/mysql.conf.d/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf.orig
+	sudp cp etc-mysql/mysqld.cnf /etc/mysql/mysql.conf.d/
+
+	# INSTALL PHP STUFF (SECTION 4)
+	sudo cp /etc/apt/sources.list /etc/apt/sources.list.orig
+	cat >> /etc/apt/sources.list <<EOL
+	deb http://us.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse
+	deb http://us.archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse
+	deb http://us.archive.ubuntu.com/ubuntu/ xenial-security main restricted universe multiverse
+EOL
+	sudo apt update
+	sudo apt install php7.2 libapache2-mod-php7.2 libmysqlclient-dev
+	sudo pip install xmltodict tweepy pillow pyteaser facebook-sdk BeautifulSoup flask mysqlclient
+
+	# INSTALL PHPMYADMIN (SECTION 5)
+	sudo apt install phpmyadmin
+	# config
+	sudo cp /etc/phpmyadmin/apache.conf /etc/phpmyadmin/apache.conf.orig
+	sudo cp phpmyadmin/etc/apache.conf /etc/phpmyadmin/
+	# import fix
+	sudo cp /usr/share/phpmyadmin/libraries/sql.lib.php /usr/share/phpmyadmin/libraries/sql.lib.php.orig
+	sudo cp phpmyadmin/usr-share-lib/sql.lib.php /usr/share/phpmyadmin/libraries/
+	sudo cp /usr/share/phpmyadmin/libraries/plugin_interface.lib.php /usr/share/phpmyadmin/libraries/plugin_interface.lib.php.orig
+	sudo cp phpmyadmin/usr-share-lib/plugin_interface.lib.php /usr/share/phpmyadmin/libraries/
+	sudo service mysql restart
+	sudo service apache2 restart
 
 	# Generate MySQL keypair
 	generate_mysql_keys $ALIAS $FQDN
+	import_mysql_pdp_keypairs $ALIAS $FQDN
+
+	make_pdp_key_package $ALIAS
 
 	echo "PDP installation complete!"
 	echo "Please now run the following command: sudo $0 -ki -x <pep-key-package-location> <pep-server-fqdn> <pep-server-alias> <pdp-server-alias>"
 }
 
-echo "DAM3ON Policy Decision Point (PDP) Installer Stating"
+echo "DAM3ON Policy Decision Point (PDP) Installer Starting"
 start=$SECONDS
 
 case $1 in
@@ -104,10 +127,7 @@ case $1 in
 	-ki|--key-import)
 		case $2 in 
 			-x|--xacml)
-				import_xacml_pdp_keys $3 $4 $5 $6
-				;;
-			-m|--mysql)
-				import_mysql_pdp_keypairs $3 $4 $5 $6
+				import_xacml_pep_keys $3 $4 $5 $6
 				;;
 			*)
 				raise_error "Unknown argument: $2"
@@ -121,9 +141,9 @@ case $1 in
 	-c|--clean-pdp)
 		clean_pdp_install_debris $2
 		;;
-	-u|--update)
-		update_config $2 $3
-		;;
+	# -u|--update)
+	#	update_config $2 $3
+	#	;;
 	-h|--help)
 		display_usage
 		;;
